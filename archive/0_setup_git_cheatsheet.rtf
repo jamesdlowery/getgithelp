@@ -1,0 +1,144 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red99\green56\blue6;
+\red83\green36\blue137;
+\red163\green45\blue45;
+\red114\green36\blue62;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- GitHub First-Time Setup Cheat Sheet\b0\par}
+{\f2\fs18\cf4 Linux \u183? install \u183? configure \u183? authenticate \u183? verify\par}
+\par
+{\f2\fs18\cf4 Flow: install git \u8594? global config \u8594? GitHub account \u8594? authenticate \u8594? credential store \u8594? verify\par}
+\par
+{\f2\fs18\cf4 Legend:  [local] = terminal  |  [web UI] = GitHub  |  [run once] = one-time global setup\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Install Git  [local]\b0\par}
+\par
+{\f1\fs20\cf2   sudo apt update && sudo apt install -y git\cf4   \cf0 # Debian / Ubuntu / Mint\par
+\cf2   sudo dnf install -y git\cf4                      \cf0 # Fedora / RHEL / CentOS\par
+\cf2   sudo pacman -S git\cf4                           \cf0 # Arch / Manjaro\par
+\cf2   git --version\cf4                               \cf0 # confirm installation\par}
+\par
+{\f2\fs18\cf5 TIP: Git 2.28+ recommended. To update on older Debian/Ubuntu:\par}
+{\f1\fs18\cf2   sudo add-apt-repository ppa:git-core/ppa\par
+  sudo apt update && sudo apt install -y git\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Global Identity & Config  [run once]\b0\par}
+\par
+{\f1\fs20\cf2   git config --global user.name \cf3"Your Name"\cf4            \cf0 # display name in all commits\par
+\cf2   git config --global user.email \cf3"you@email.com"\cf4       \cf0 # must match GitHub account email\par
+\cf2   git config --global init.defaultBranch main\cf4          \cf0 # default branch name for new repos\par
+\cf2   git config --global core.editor nano\cf4                 \cf0 # default editor (nano, vim, etc.)\par
+\cf2   git config --global pull.rebase true\cf4                 \cf0 # rebase instead of merge on git pull\par
+\cf2   git config --global color.ui auto\cf4                    \cf0 # enable coloured terminal output\par
+\cf2   git config --global --list\cf4                           \cf0 # review all global settings\par}
+\par
+{\f2\fs18\cf4 NOTE: Config stored in \cf1\f1 ~/.gitconfig\f2\cf4 . Edit directly with \cf1\f1 nano ~/.gitconfig\f2\cf4 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Create / Configure GitHub Account  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   - Sign up or log in at github.com (use same email as user.email above)\par
+   - Settings \u8594? Emails \u8594? verify your email address\par
+   - Settings \u8594? Profile \u8594? add name, avatar (optional)\par
+   - Settings \u8594? Security \u8594? enable two-factor authentication (2FA)\cf4\par}
+\par
+{\f2\fs18\cf8 WARNING: GitHub no longer accepts plain passwords for Git operations.\par
+You must authenticate using a Personal Access Token (HTTPS) or an SSH key.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Choose an Authentication Method\b0\par}
+\par
+{\f2\fs18\cf4   Personal Access Token (PAT) -- HTTPS:\par
+    Simpler setup. Token acts as your password. Works anywhere.\par
+    Best for getting started quickly.\par}
+\par
+{\f2\fs18\cf4   SSH Key -- SSH:\par
+    More secure. No token to expire or rotate. Password-free after setup.\par
+    Preferred for daily development work.\par}
+\par
+{\f2\fs18\cf4 NOTE: You only need one method. Use PAT for simplicity, SSH for long-term use.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Option A -- Personal Access Token (PAT)  [HTTPS]\b0\par}
+\par
+{\f2\fs18\b\cf1 Generate the token  [web UI]\b0\par}
+{\f2\fs20\cf7   GitHub \u8594? Settings \u8594? Developer settings \u8594? Personal access tokens\par
+   \u8594? Tokens (classic) \u8594? Generate new token\par
+   Set expiry, tick scopes: repo, workflow\par
+   Copy the token immediately -- it is only shown once\par
+   Store it in a password manager (e.g. KeePassXC, Bitwarden)\cf4\par}
+\par
+{\f2\fs18\b\cf1 Store the token so Git remembers it  [local]\b0\par}
+{\f1\fs20\cf2   git config --global credential.helper store\cf4\par}
+{\f2\fs16\cf4   \u8658?  saves to \cf1\f1 ~/.git-credentials\f2\cf4  (plaintext -- trusted machines only)\par}
+\par
+{\f1\fs20\cf2   git config --global credential.helper 'cache --timeout=3600'\cf4\par}
+{\f2\fs16\cf4   \u8658?  cache in memory for 1 hour (more secure)\par}
+\par
+{\f1\fs18\cf2   git config --global credential.helper \par
+     /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret\cf4\par}
+{\f2\fs16\cf4   \u8658?  use GNOME Keyring / libsecret (most secure option)\par}
+\par
+{\f2\fs18\cf4 NOTE: After setting a credential helper, the first \cf1\f1 git push\f2\cf4  prompts for\par
+username + token. Git stores it automatically after that.\par}
+\par\line
+
+{\f0\fs24\b\cf1 6. Option B -- SSH Key  [SSH]\b0\par}
+\par
+{\f1\fs20\cf2   ssh-keygen -t ed25519 -C \cf3"you@email.com"\cf4          \cf0 # generate Ed25519 key pair\par
+\cf2   eval "$(ssh-agent -s)"\cf4                           \cf0 # start the SSH agent\par
+\cf2   ssh-add ~/.ssh/id_ed25519\cf4                       \cf0 # add private key to agent\par
+\cf2   cat ~/.ssh/id_ed25519.pub\cf4                       \cf0 # copy the entire output\par}
+\par
+{\f2\fs20\cf7   GitHub \u8594? Settings \u8594? SSH and GPG keys \u8594? New SSH key\par
+   Paste the public key, give it a title, save\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Add this to \cf1\f1 ~/.ssh/config\f2\cf5  for automatic key loading:\par}
+{\f1\fs18\cf4   Host github.com\par
+     AddKeysToAgent yes\par
+     IdentityFile ~/.ssh/id_ed25519\par}
+\par\line
+
+{\f0\fs24\b\cf1 7. Verify the Connection  [local]\b0\par}
+\par
+{\f1\fs20\cf2   ssh -T git@github.com\cf4                            \cf0 # test SSH -- expect "Hi <user>! You've successfully authenticated"\par
+\cf2   git config --global --list\cf4                      \cf0 # confirm all global settings\par
+\cf2   git clone git@github.com:\cf3<user>/<repo>\cf2 .git\cf4       \cf0 # SSH clone test\par
+\cf2   git clone https://github.com/\cf3<user>/<repo>\cf2 .git\cf4   \cf0 # HTTPS clone test\par}
+\par
+{\f2\fs18\cf5 TIP: Run \cf1\f1 ssh -vT git@github.com\f2\cf5  for verbose output if the connection test fails.\par}
+\par\line
+
+{\f0\fs24\b\cf1 8. Full Setup Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf4   # --- install ---\par
+\cf2   sudo apt install -y git && git --version\cf4\par
+   # --- global config ---\par
+\cf2   git config --global user.name \cf3"Your Name"\cf1\par
+  git config --global user.email \cf3"you@email.com"\cf1\par
+  git config --global init.defaultBranch main\par
+  git config --global pull.rebase true\cf4\par
+   # --- SSH key (recommended) ---\par
+\cf2   ssh-keygen -t ed25519 -C \cf3"you@email.com"\cf1\par
+  eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519\par
+  cat ~/.ssh/id_ed25519.pub\cf4      \cf0 # paste into GitHub \u8594? Settings \u8594? SSH keys\par
+\cf4   # --- verify ---\par
+\cf2   ssh -T git@github.com\par}
+\par
+}

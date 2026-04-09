@@ -1,0 +1,120 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red99\green56\blue6;
+\red83\green36\blue137;
+\red163\green45\blue45;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- Merge to Dev via PR Cheat Sheet\b0\par}
+{\f2\fs18\cf4 Linux \u183? feature branch \u8594? PR \u8594? dev\par}
+\par
+{\f2\fs18\cf4 Flow: feature branch \u8594? push \u8594? open PR \u8594? review & approve \u8594? merge PR (web UI) \u8594? pull dev locally\par}
+\par
+{\f2\fs18\cf4 Legend:  [local] = terminal commands  |  [web UI] = GitHub or GitLab actions\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Clean Up & Push Your Branch  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git status\cf4                              \cf0 # confirm no uncommitted changes\par
+  git push -u origin \cf3<your-branch>\cf4          \cf0 # push branch, set upstream tracking\par}
+\par
+{\f2\fs18\cf4 NOTE: The -u flag is only needed the first time. After that, just use \cf1\f1 git push\f2\cf4 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Open a Pull Request  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   GitHub:  Repo \u8594? Pull Requests \u8594? New pull request\par
+           base: dev  |  compare: \cf3<your-branch>\cf7\par
+\par
+   GitLab:  Repo \u8594? Merge Requests \u8594? New merge request\par
+            source: \cf3<your-branch>\cf7  |  target: dev\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Write a clear PR title and description. Assign reviewers and link related issues.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Address Review Feedback  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git add -A && git commit -m \cf3"address review feedback"\cf1\par
+  git push\cf4                                 \cf0 # PR refreshes automatically\par}
+\par
+{\f2\fs18\cf4 NOTE: Repeat commit + push as many times as needed. The PR always reflects the latest branch state.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Resolve Conflicts (If Flagged in the PR)  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev && git pull --rebase origin dev\cf4  \cf0 # sync dev locally\par
+\cf2   git checkout \cf3<your-branch>\cf4                      \cf0 # switch back to your branch\par
+\cf2   git merge dev\cf4                              \cf0 # bring dev changes in to surface conflicts\par
+\cf2   nano \cf3<conflicting-file>\cf4                   \cf0 # resolve <<<, ===, >>> markers manually\par
+\cf2   git add -A && git commit && git push\cf4       \cf0 # stage, commit, push -- PR shows no conflicts\par}
+\par
+{\f2\fs18\cf8 WARNING: Every conflict marker (<<<<<<<, =======, >>>>>>>) must be removed before committing.\par
+Leaving one in will break the build.\par}
+\par
+{\f2\fs18\cf4 Conflict marker anatomy:\par}
+{\f1\fs18\cf4   <<<<<<< HEAD (dev)\par
+     code from dev\par
+   =======\par
+     code from your branch\par
+   >>>>>>> your-branch\par}
+{\f2\fs18\cf4 Delete the markers, keep the correct code, then \cf1\f1 git add\f2\cf4  the file.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Merge the PR  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   GitHub: Click "Merge pull request" \u8594? choose strategy \u8594? confirm\par
+   GitLab: Click "Merge" \u8594? choose strategy \u8594? confirm\par}
+\par
+{\f2\fs18\cf4 Merge strategies:\par
+   Merge commit    -- keeps full branch history with a merge commit\par
+   Squash and merge -- condenses all commits into one commit on dev\par
+   Rebase and merge -- replays commits linearly onto dev\par}
+\par
+{\f2\fs18\cf5 TIP: Check your team\'92s convention. Most teams standardise on one strategy.\par}
+\par\line
+
+{\f0\fs24\b\cf1 6. Sync Local Dev After the Merge  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev\cf4                         \cf0 # switch to local dev\par
+  git pull origin dev\cf4                      \cf0 # pull merged state from remote\par}
+\par\line
+
+{\f0\fs24\b\cf1 7. Clean Up  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git branch -d \cf3<your-branch>\cf4              \cf0 # delete local branch\par
+  git push origin --delete \cf3<your-branch>\cf4    \cf0 # delete remote branch (if not auto-deleted)\par
+  git fetch --prune\cf4                        \cf0 # remove stale remote-tracking refs\par}
+\par
+{\f2\fs18\cf4 NOTE: Use \cf1\f1 -D\f2\cf4  instead of \cf1\f1 -d\f2\cf4  to force-delete a branch not yet fully merged.\par}
+\par\line
+
+{\f0\fs24\b\cf1 8. Full Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf4   # --- local: push your branch ---\par
+\cf2   git push -u origin \cf3<your-branch>\cf1\par
+\cf4   # --- web UI: open PR, assign reviewers ---\par
+   # --- web UI: iterate on feedback (push more commits as needed) ---\par
+   # --- local: if conflicts are flagged in the PR ---\par
+\cf2   git checkout dev && git pull --rebase origin dev\par
+  git checkout \cf3<your-branch>\cf1\par
+  git merge dev\cf4              \cf0 # resolve conflicts, then:\par
+\cf2   git add -A && git commit && git push\cf4\par
+   # --- web UI: merge the PR once approved ---\par
+   # --- local: sync and clean up ---\par
+\cf2   git checkout dev && git pull origin dev\par
+  git branch -d \cf3<your-branch>\cf1\par
+  git fetch --prune\par}
+\par
+}

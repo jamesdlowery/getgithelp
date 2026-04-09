@@ -1,0 +1,74 @@
+Cheat-Sheet(s)
+    "GREAT! Now, append this to the beginning of the 'combined' MD, RTF, and HTML files you created earlier."
+
+Build daily news brief aggregator
+    News source(s) selector (AP, BBC, Reauters, etc)
+    Subject to choose from
+    Up to 12(?) custom keyword(s) dearch(es) as 'subjects'
+    Choose maximum number or articles per subject
+        For all subjects
+        <OR>
+        Set each subject maximum individually
+
+RE Best English Kiwix (Zim, Zam, Zoom)
+    Verify the need for these, or are they all ready included in the 'maxi_all' downloads (if applicable):
+        hasbeenjim@info:~$ sudo rsync -ah --ignore-existing /opt/project-nomad/storage/zim/ /mnt/
+            gutenberg_en_lcc-s_2026-03.zim
+            gutenberg_en_lcc-u_2026-03.zim
+            ifixit_en_all_2025-12.zim
+            lrnselfreliance_en_all_2025-12.zim
+
+            ted_mul_ted-ed_2026-01.zim
+            wikibooks_en_all_nopic_2026-01.zim
+            wikipedia_en_medicine_maxi_2026-01.zim
+    Add these (hardcoded) to be downloaded/updated
+       ted_mul_all_2025-08.zim
+       ted_mul_ted-conference_2026-02.zim
+
+    'CATEGORIES/SUBJECTS'
+        devdocs
+        freecodecamp
+        ifixit
+        libretexts
+        maps
+        mooc
+        other
+        phet
+        psiram
+        stack_exchange
+        ted
+        videos
+        vikidia
+        wikibooks
+        wikinews
+        wikipedia
+        wikiquote
+        wikisource
+        wikiversity
+        wikivoyage
+        wiktionary
+        zimit
+
+
+---------------------------------------------------------------------
+
+What (Debian) Linux DAW(s) are compatible with the Soniccharge Complete Bundle (Echobode, Permut8, Bitspeek, Microtonic, and Synplant 2)
+
+---------------------------------------------------------------------
+
+cd My\ Py\ Software/basic_cryptanalysis
+
+git init
+git branch -M main
+git add .
+git commit -m "Initial commit: lottery_simulator_20260405e"
+
+Create a new repository on GitHub (in your browser):
+Go to https://github.com/new
+Enter a repository name: lottery_simulator
+Important: Do NOT initialize with README, .gitignore, or license (to avoid conflicts with your local files)
+Click Create repository
+
+git remote add origin https://github.com/jamesdlowery/lottery_simulator
+git branch -M main
+git push -u origin main

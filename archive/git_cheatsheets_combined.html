@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Cheat Sheets</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: #f5f4f0;
+    color: #111;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ── Top header ── */
+  .doc-header {
+    border-bottom: 3px solid #111;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .doc-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .doc-header p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: #fff;
+    border: 0.5px solid #ddd;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .toc h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+    margin-bottom: 0.75rem;
+  }
+  .toc ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+  .toc ol li a {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #185FA5;
+    text-decoration: none;
+  }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #555;
+  }
+  .leg-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Part header ── */
+  .part {
+    margin-bottom: 3rem;
+    page-break-before: always;
+  }
+  .part:first-of-type { page-break-before: auto; }
+  .part-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 2px solid #111;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .part-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .part-flow {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 1.75rem;
+  }
+
+  /* ── Flow strip ── */
+  .flow-strip {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.75rem;
+    padding: 0.75rem 0;
+  }
+  .flow-node { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .flow-pill {
+    padding: 5px 13px;
+    border-radius: 7px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .flow-arrow { font-size: 13px; color: #bbb; padding-top: 8px; }
+  .flow-sub { font-size: 0.65rem; color: #aaa; text-align: center; max-width: 80px; line-height: 1.3; }
+
+  .fp-blue   { background: #B5D4F4; color: #0C447C; }
+  .fp-teal   { background: #9FE1CB; color: #085041; }
+  .fp-purple { background: #CECBF6; color: #3C3489; }
+  .fp-coral  { background: #F5C4B3; color: #712B13; }
+  .fp-amber  { background: #FAC775; color: #633806; }
+  .fp-green  { background: #C0DD97; color: #27500A; }
+  .fp-gray   { background: #D3D1C7; color: #444441; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 1.75rem; }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.65rem;
+  }
+  .snum {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .snum.blue   { background: #B5D4F4; color: #0C447C; }
+  .snum.teal   { background: #9FE1CB; color: #085041; }
+  .snum.purple { background: #CECBF6; color: #3C3489; }
+  .snum.coral  { background: #F5C4B3; color: #712B13; }
+  .snum.amber  { background: #FAC775; color: #633806; }
+  .snum.green  { background: #C0DD97; color: #27500A; }
+  .snum.pink   { background: #F4C0D1; color: #72243E; }
+  .snum.gray   { background: #D3D1C7; color: #444441; }
+  .snum.red    { background: #F7C1C1; color: #791F1F; }
+
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+  .b-local  { background: #B5D4F4; color: #0C447C; }
+  .b-web    { background: #CECBF6; color: #3C3489; }
+  .b-danger { background: #F7C1C1; color: #791F1F; }
+  .b-new    { background: #9FE1CB; color: #085041; }
+  .b-change { background: #B5D4F4; color: #0C447C; }
+  .b-delete { background: #F5C4B3; color: #712B13; }
+  .b-move   { background: #CECBF6; color: #3C3489; }
+  .b-once   { background: #9FE1CB; color: #085041; }
+  .b-pat    { background: #FAC775; color: #633806; }
+  .b-ssh    { background: #F4C0D1; color: #72243E; }
+
+  /* ── Command rows ── */
+  .cmd-list { display: flex; flex-direction: column; gap: 5px; }
+  .cmd-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 8px 12px;
+    border-radius: 7px;
+    background: #f0ede8;
+    border: 0.5px solid #ddd;
+  }
+  .cmd-row.web  { background: #EEF5FD; border-color: #c5d9f0; }
+  .cmd-row.danger { background: #FDF0F0; border-color: #f0c0c0; }
+  .cmd-row.full { grid-template-columns: 1fr; }
+
+  .cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    color: #111;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  .cmd .flag { color: #185FA5; }
+  .cmd .ph   { color: #993C1D; font-style: italic; }
+  .cmd .cmt  { color: #999; }
+  .cmd-web   { font-size: 0.8rem; color: #185FA5; font-weight: 600; line-height: 1.5; }
+  .cmd-danger { font-size: 0.76rem; color: #A32D2D; font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
+  .desc { font-size: 0.78rem; color: #666; line-height: 1.5; }
+
+  /* ── Notes / warnings / tips ── */
+  .note, .warn, .tip, .err {
+    font-size: 0.75rem;
+    padding: 7px 12px;
+    margin-top: 7px;
+    line-height: 1.55;
+    border-radius: 0 7px 7px 0;
+  }
+  .note { background: #f0ede8; border-left: 2px solid #bbb; color: #666; }
+  .warn { background: #FFF8EC; border-left: 2px solid #d4952a; color: #7a5010; }
+  .tip  { background: #EAF3DE; border-left: 2px solid #3B6D11; color: #27500A; }
+  .err  { background: #FDF0F0; border-left: 2px solid #c03030; color: #791F1F; }
+  .note code, .warn code, .tip code, .err code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* ── Conflict block ── */
+  .conflict-block {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: #f0ede8;
+    border: 0.5px solid #ddd;
+    border-radius: 7px;
+    padding: 10px 14px;
+    margin-top: 7px;
+    line-height: 1.8;
+  }
+  .conflict-block .c-head { color: #185FA5; }
+  .conflict-block .c-sep  { color: #A32D2D; }
+  .conflict-block .c-tail { color: #3B6D11; }
+  .conflict-block .c-code { color: #666; }
+
+  /* ── Strategy / semver tables ── */
+  .sub-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    margin-top: 7px;
+  }
+  .sub-table th {
+    text-align: left;
+    padding: 6px 10px;
+    background: #e8e5e0;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #666;
+  }
+  .sub-table td {
+    padding: 6px 10px;
+    border-bottom: 0.5px solid #e0ddd8;
+    color: #444;
+    vertical-align: top;
+  }
+  .sub-table tr:last-child td { border-bottom: none; }
+  .sub-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* ── Quick ref code block ── */
+  .quick-ref {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 2;
+    background: #f0ede8;
+    border: 0.5px solid #ddd;
+    border-radius: 7px;
+    padding: 12px 16px;
+  }
+  .quick-ref .flag { color: #185FA5; }
+  .quick-ref .ph   { color: #993C1D; font-style: italic; }
+  .quick-ref .cmt  { color: #999; }
+
+  hr { border: none; border-top: 0.5px solid #ddd; margin: 1.25rem 0; }
+
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid #ddd;
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+  .footer a { color: #185FA5; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .part { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>Git Cheat Sheets</h1>
+    <p>Linux &nbsp;·&nbsp; A complete reference from first-time setup to production</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#part0">Part 0 — First-time GitHub setup</a></li>
+      <li><a href="#part1">Part 1 — Create a new repository</a></li>
+      <li><a href="#part2">Part 2 — Clone an existing repository</a></li>
+      <li><a href="#part3">Part 3 — Sync local changes</a></li>
+      <li><a href="#part4">Part 4 — Merge to dev via PR</a></li>
+      <li><a href="#part5">Part 5 — Promote dev to main</a></li>
+    </ol>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#B5D4F4;"></div>[local] — terminal command</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#CECBF6;"></div>[web UI] — GitHub or GitLab</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9FE1CB;"></div>[run once] — one-time global setup</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#FAC775;"></div>[gh] — GitHub CLI required</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#F7C1C1;"></div>[DANGER] — production impact</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 0 -->
+  <div class="part" id="part0">
+    <div class="part-header"><h2>Part 0 — First-Time GitHub Setup</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-blue">install git + gh</div><div class="flow-sub">apt / dnf</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-teal">global config</div><div class="flow-sub">name, email, prefs</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-purple">GitHub account</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-coral">authenticate</div><div class="flow-sub">PAT or SSH</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-amber">credential store</div><div class="flow-sub">cache or keyring</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">verify</div><div class="flow-sub">git + gh</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">1</div><div class="section-title">Install Git <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">sudo apt update &amp;&amp; sudo apt install <span class="flag">-y</span> git</div><div class="desc">Debian / Ubuntu / Mint</div></div>
+        <div class="cmd-row"><div class="cmd">sudo dnf install <span class="flag">-y</span> git</div><div class="desc">Fedora / RHEL / CentOS</div></div>
+        <div class="cmd-row"><div class="cmd">sudo pacman <span class="flag">-S</span> git</div><div class="desc">Arch / Manjaro</div></div>
+        <div class="cmd-row"><div class="cmd">git <span class="flag">--version</span></div><div class="desc">Confirm installation and check version</div></div>
+      </div>
+      <div class="tip">Git 2.28+ is recommended. To update on older Debian/Ubuntu:<br><code>sudo add-apt-repository ppa:git-core/ppa && sudo apt update && sudo apt install -y git</code></div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">1b</div><div class="section-title">Install GitHub CLI (<code style="font-family:JetBrains Mono,monospace;font-size:11px">gh</code>) <span class="badge b-local">local</span></div></div>
+      <div class="note" style="margin-bottom:8px;"><strong style="font-weight:500">What is <code>gh</code>?</strong> The official GitHub CLI. It talks to the GitHub <em>platform</em> — creating repos, opening PRs, managing issues — things <code>git</code> itself knows nothing about.</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">sudo apt install gh</div><div class="desc">Debian / Ubuntu / Mint</div></div>
+        <div class="cmd-row"><div class="cmd">sudo dnf install gh</div><div class="desc">Fedora / RHEL / CentOS</div></div>
+        <div class="cmd-row"><div class="cmd">sudo pacman <span class="flag">-S</span> github-cli</div><div class="desc">Arch / Manjaro</div></div>
+        <div class="cmd-row"><div class="cmd">gh <span class="flag">--version</span></div><div class="desc">Confirm installation</div></div>
+        <div class="cmd-row"><div class="cmd">gh auth login</div><div class="desc">Authenticate <code style="font-family:JetBrains Mono,monospace;font-size:11px">gh</code> with GitHub — follow the interactive prompts</div></div>
+        <div class="cmd-row"><div class="cmd">gh auth status</div><div class="desc">Verify <code style="font-family:JetBrains Mono,monospace;font-size:11px">gh</code> is authenticated and connected</div></div>
+      </div>
+      <div class="note"><code>gh auth login</code> handles its own auth separately from <code>git</code>'s credential helper. You still need to set up git auth (PAT or SSH key) for <code>git push</code> / <code>git pull</code> operations.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">2</div><div class="section-title">Global Identity &amp; Config <span class="badge b-once">run once</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> user.name <span class="ph">"Your Name"</span></div><div class="desc">Your display name — appears in all commits</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> user.email <span class="ph">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dba2b4ae9bbeb6bab2b7f5b8b4b6">[email&#160;protected]</a>"</span></div><div class="desc">Must match your GitHub account email</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> init.defaultBranch main</div><div class="desc">Set default branch name to <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">main</code> for all new repos</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> core.editor nano</div><div class="desc">Set default editor for commit messages</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> pull.rebase true</div><div class="desc">Default to rebase instead of merge on <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">git pull</code></div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> color.ui auto</div><div class="desc">Enable coloured terminal output</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global --list</span></div><div class="desc">Review all global settings</div></div>
+      </div>
+      <div class="note">Global config is stored in <code>~/.gitconfig</code>. Edit directly with <code>nano ~/.gitconfig</code>.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum purple">3</div><div class="section-title">Create / Configure GitHub Account <span class="badge b-web">web UI</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">Sign up or log in at github.com</div><div class="desc">Use the same email as <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">user.email</code> above</div></div>
+        <div class="cmd-row web"><div class="cmd-web">Settings → Emails → verify your email address</div><div class="desc">GitHub won't accept pushes from an unverified email</div></div>
+        <div class="cmd-row web"><div class="cmd-web">Settings → Profile → add name, avatar (optional)</div><div class="desc">Helps collaborators identify you in PRs and reviews</div></div>
+        <div class="cmd-row web"><div class="cmd-web">Settings → Security → enable two-factor authentication (2FA)</div><div class="desc">Required for most organisations; strongly recommended for all</div></div>
+      </div>
+      <div class="warn">GitHub no longer accepts plain passwords for Git operations. You must authenticate using a Personal Access Token (HTTPS) or an SSH key.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum coral">4</div><div class="section-title">Choose an Authentication Method</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#633806;margin-bottom:6px;">Personal Access Token (PAT) — HTTPS</div>
+          <div style="font-size:11.5px;color:var(--color-text-secondary);line-height:1.5;">Simpler to set up. Token acts as your password. Works anywhere. Best for getting started quickly.</div>
+        </div>
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#72243E;margin-bottom:6px;">SSH Key — SSH</div>
+          <div style="font-size:11.5px;color:var(--color-text-secondary);line-height:1.5;">More secure. No token to expire or rotate. Password-free after setup. Preferred for daily dev work.</div>
+        </div>
+      </div>
+      <div class="note">You only need one method. Use PAT for simplicity; SSH for long-term use.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">5</div><div class="section-title">Option A — Personal Access Token <span class="badge b-pat">HTTPS</span></div></div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;">Generate the token <span class="badge b-web">web UI</span></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token</div><div class="desc">Set expiry; tick scopes: <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">repo</code>, <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">workflow</code></div></div>
+        <div class="cmd-row web"><div class="cmd-web">Copy the token immediately — it is only shown once</div><div class="desc">Store it in a password manager (e.g. KeePassXC, Bitwarden)</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin:10px 0 6px;">Store the token so Git remembers it <span class="badge b-local">local</span></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> credential.helper store</div><div class="desc">Save to <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">~/.git-credentials</code> (plaintext — trusted machines only)</div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global</span> credential.helper <span class="ph">'cache --timeout=3600'</span></div><div class="desc">Cache in memory for 1 hour (more secure)</div></div>
+        <div class="cmd-row"><div class="cmd" style="font-size:11px;">git config <span class="flag">--global</span> credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret</div><div class="desc">Use GNOME Keyring / libsecret (most secure)</div></div>
+      </div>
+      <div class="note">After setting a credential helper, the first <code>git push</code> prompts for username + token. Git stores it automatically after that.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum pink">6</div><div class="section-title">Option B — SSH Key <span class="badge b-ssh">SSH</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">ssh-keygen <span class="flag">-t</span> ed25519 <span class="flag">-C</span> <span class="ph">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9c0d6ccf9dcd4d8d0d597dad6d4">[email&#160;protected]</a>"</span></div><div class="desc">Generate a new Ed25519 key pair (recommended algorithm)</div></div>
+        <div class="cmd-row"><div class="cmd">eval "$(ssh-agent -s)"</div><div class="desc">Start the SSH agent in the current shell</div></div>
+        <div class="cmd-row"><div class="cmd">ssh-add ~/.ssh/id_ed25519</div><div class="desc">Add your private key to the agent</div></div>
+        <div class="cmd-row"><div class="cmd">cat ~/.ssh/id_ed25519.pub</div><div class="desc">Print your public key — copy the entire output</div></div>
+        <div class="cmd-row web"><div class="cmd-web">GitHub → Settings → SSH and GPG keys → New SSH key</div><div class="desc">Paste the public key, give it a title, save</div></div>
+      </div>
+      <div class="tip">Add this to <code>~/.ssh/config</code> for automatic key loading on login:<br>
+        <code>Host github.com</code><br>
+        <code>&nbsp;&nbsp;AddKeysToAgent yes</code><br>
+        <code>&nbsp;&nbsp;IdentityFile ~/.ssh/id_ed25519</code>
+      </div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum green">7</div><div class="section-title">Verify the Connection <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">ssh <span class="flag">-T</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680f011c280f011c001d0a460b0705">[email&#160;protected]</a></div><div class="desc">Expect: <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">Hi &lt;username&gt;! You've successfully authenticated</code></div></div>
+        <div class="cmd-row"><div class="cmd">git config <span class="flag">--global --list</span></div><div class="desc">Confirm all global settings are correct</div></div>
+        <div class="cmd-row"><div class="cmd">git clone <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c8afa1bc88afa1bca0bdaae6aba7a5">[email&#160;protected]</a>:<span class="ph">&lt;user&gt;</span>/<span class="ph">&lt;repo&gt;</span>.git</div><div class="desc">SSH clone — confirms end-to-end auth works</div></div>
+        <div class="cmd-row"><div class="cmd">git clone https://github.com/<span class="ph">&lt;user&gt;</span>/<span class="ph">&lt;repo&gt;</span>.git</div><div class="desc">HTTPS clone — confirms PAT auth works</div></div>
+      </div>
+      <div class="tip">Run <code>ssh -vT <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d0a04192d0a041905180f430e0200">[email&#160;protected]</a></code> for verbose output if the connection test fails.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">8</div><div class="section-title"><code style="font-family:JetBrains Mono,monospace;font-size:11px">GH_TOKEN</code> — environment variable authentication</div></div>
+      <div class="note" style="margin-bottom:10px;">An alternative to <code>gh auth login</code> for non-interactive environments. Set <code>GH_TOKEN</code> to a GitHub PAT and <code>gh</code> uses it automatically. If both are present, <code>GH_TOKEN</code> takes precedence.</div>
+      <table class="sub-table" style="margin-bottom:10px;">
+        <tr><th></th><th><code>gh auth login</code></th><th><code>GH_TOKEN</code></th></tr>
+        <tr><td>How set</td><td>Interactive prompt</td><td>Environment variable</td></tr>
+        <tr><td>Persists across sessions</td><td>Yes — stored in <code>~/.config/gh/hosts.yml</code></td><td>No — lives in memory only</td></tr>
+        <tr><td>Works without a human</td><td>No</td><td>Yes — fully scriptable</td></tr>
+        <tr><td>Best for</td><td>Developer workstations</td><td>CI/CD, scripts, Docker, automation</td></tr>
+        <tr><td>Configures git credential helper</td><td>Yes (HTTPS option)</td><td>No — git push/pull needs separate auth</td></tr>
+      </table>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;">Session-only (current terminal)</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">export GH_TOKEN=<span class="ph">&lt;your-PAT&gt;</span></div><div class="desc">Set token for this shell session only</div></div>
+        <div class="cmd-row"><div class="cmd">gh auth status</div><div class="desc">Verify <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">gh</code> is picking up the token</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin:10px 0 6px;">Persistent in shell profile (personal machine)</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">echo <span class="ph">'export GH_TOKEN=&lt;your-PAT&gt;'</span> &gt;&gt; ~/.bashrc</div><div class="desc">Append to shell profile — loads on every new session</div></div>
+        <div class="cmd-row"><div class="cmd">source ~/.bashrc</div><div class="desc">Apply immediately in the current session</div></div>
+      </div>
+      <div class="warn">Never hard-code a real token in a script that gets committed to a repo. Use your CI/CD platform's secret injection instead.</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin:10px 0 6px;">In a GitHub Actions workflow</div>
+      <div class="cmd-list">
+        <div class="cmd-row full"><div class="cmd"><span class="cmt">- name: Run gh command</span><br>&nbsp;&nbsp;env:<br>&nbsp;&nbsp;&nbsp;&nbsp;GH_TOKEN: <span class="ph">${{ secrets.GITHUB_TOKEN }}</span> <span class="cmt"># auto-provided by Actions</span><br>&nbsp;&nbsp;run: gh pr list</div></div>
+      </div>
+      <div class="note"><code>GH_TOKEN</code> authenticates <code>gh</code> only. For <code>git push</code> / <code>git pull</code> over HTTPS, configure the credential helper separately, or use SSH keys.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">9</div><div class="section-title">Quick Reference</div></div>
+      <div class="quick-ref">
+        <span class="cmt"># --- install git ---</span><br>
+        sudo apt install <span class="flag">-y</span> git &amp;&amp; git <span class="flag">--version</span><br>
+        <span class="cmt"># --- install gh ---</span><br>
+        sudo apt install gh &amp;&amp; gh <span class="flag">--version</span><br>
+        gh auth login <span class="cmt"># interactive: workstation setup</span><br>
+        <span class="cmt"># --- OR for scripts/CI: ---</span><br>
+        export GH_TOKEN=<span class="ph">&lt;your-PAT&gt;</span> <span class="cmt"># takes precedence over gh auth login</span><br>
+        <span class="cmt"># --- global git config ---</span><br>
+        git config <span class="flag">--global</span> user.name <span class="ph">"Your Name"</span><br>
+        git config <span class="flag">--global</span> user.email <span class="ph">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d5442586d48404c4441034e4240">[email&#160;protected]</a>"</span><br>
+        git config <span class="flag">--global</span> init.defaultBranch main<br>
+        git config <span class="flag">--global</span> pull.rebase true<br>
+        <span class="cmt"># --- SSH key (recommended) ---</span><br>
+        ssh-keygen <span class="flag">-t</span> ed25519 <span class="flag">-C</span> <span class="ph">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="add4c2d8edc8c0ccc4c183cec2c0">[email&#160;protected]</a>"</span><br>
+        eval "$(ssh-agent -s)" &amp;&amp; ssh-add ~/.ssh/id_ed25519<br>
+        cat ~/.ssh/id_ed25519.pub <span class="cmt"># paste into GitHub → Settings → SSH keys</span><br>
+        <span class="cmt"># --- verify ---</span><br>
+        ssh <span class="flag">-T</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="02656b7642656b766a77602c616d6f">[email&#160;protected]</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 1 -->
+  <div class="part" id="part1">
+    <div class="part-header"><h2>Part 1 — Create a New Repository</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-amber">gh repo create</div><div class="flow-sub">or git init</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-teal">add files</div><div class="flow-sub">git add</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-purple">commit</div><div class="flow-sub">git commit</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">push</div><div class="flow-sub">git push</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">0</div><div class="section-title"><code style="font-family:JetBrains Mono,monospace;font-size:11px">git</code> vs <code style="font-family:JetBrains Mono,monospace;font-size:11px">gh</code> — which to use?</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#0C447C;margin-bottom:6px;"><code style="font-family:JetBrains Mono,monospace">git</code> only</div>
+          <div style="font-size:11.5px;color:var(--color-text-secondary);line-height:1.6;">Works with GitHub, GitLab, Bitbucket, and any Git host. Must create the remote repo manually (web UI or API) before pushing. Best for host-agnostic scripts or multi-platform teams.</div>
+        </div>
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#633806;margin-bottom:6px;"><code style="font-family:JetBrains Mono,monospace">gh</code> + <code style="font-family:JetBrains Mono,monospace">git</code></div>
+          <div style="font-size:11.5px;color:var(--color-text-secondary);line-height:1.6;">GitHub only. Creates the remote repo on GitHub directly from the terminal — no web UI needed. Faster end-to-end setup. Best for GitHub-only workflows.</div>
+        </div>
+      </div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">1</div><div class="section-title">Option A — Create with <code style="font-family:JetBrains Mono,monospace;font-size:11px">gh</code> (GitHub only) <span class="badge b-pat">gh</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">gh repo create <span class="ph">&lt;project-name&gt;</span> <span class="flag">--public --clone</span></div><div class="desc">Create remote repo on GitHub and clone it locally in one command</div></div>
+        <div class="cmd-row"><div class="cmd">cd <span class="ph">&lt;project-name&gt;</span></div><div class="desc">Navigate into the cloned folder</div></div>
+        <div class="cmd-row"><div class="cmd">gh repo create <span class="ph">&lt;name&gt;</span> <span class="flag">--public --source=. --remote=origin --push</span></div><div class="desc">Create from an existing local folder, set remote, and push immediately</div></div>
+      </div>
+      <table class="sub-table" style="margin-top:10px;">
+        <tr><th>Flag</th><th>Description</th></tr>
+        <tr><td><code>--public</code> / <code>--private</code></td><td>Set repo visibility</td></tr>
+        <tr><td><code>--clone</code></td><td>Clone the new repo locally after creating it</td></tr>
+        <tr><td><code>--source=.</code></td><td>Use the current directory as the local source</td></tr>
+        <tr><td><code>--remote=origin</code></td><td>Set the new GitHub repo as the <code>origin</code> remote</td></tr>
+        <tr><td><code>--push</code></td><td>Push local commits to the remote immediately</td></tr>
+        <tr><td><code>--description "text"</code></td><td>Add a repo description</td></tr>
+        <tr><td><code>--add-readme</code></td><td>Initialise with a README on GitHub</td></tr>
+        <tr><td><code>--gitignore &lt;template&gt;</code></td><td>Add a .gitignore from a GitHub template (e.g. <code>Node</code>, <code>Python</code>)</td></tr>
+      </table>
+      <div class="tip"><code>gh repo create --clone</code> gives you a fully connected local + remote repo in a single command — no <code>git remote add</code> needed.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">2</div><div class="section-title">Option B — Create with <code style="font-family:JetBrains Mono,monospace;font-size:11px">git</code> only <span class="badge b-local">local</span></div></div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;">Create &amp; initialize</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">mkdir <span class="ph">&lt;project-name&gt;</span></div><div class="desc">Create a new project folder</div></div>
+        <div class="cmd-row"><div class="cmd">cd <span class="ph">&lt;project-name&gt;</span></div><div class="desc">Navigate into that folder</div></div>
+        <div class="cmd-row"><div class="cmd">git init</div><div class="desc">Initialize an empty Git repo (creates <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">.git/</code>)</div></div>
+      </div>
+      <div class="note" style="margin-bottom:8px;">You will need to create the remote repo on GitHub (web UI or API) before you can push.</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;margin-top:10px;">Add content</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">touch README.md</div><div class="desc">Create an empty README file</div></div>
+        <div class="cmd-row"><div class="cmd">echo <span class="ph">"# My Project"</span> &gt;&gt; README.md</div><div class="desc">Append content to a file from the terminal</div></div>
+        <div class="cmd-row"><div class="cmd">git status</div><div class="desc">See which files are untracked / modified</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="ph">&lt;file&gt;</span></div><div class="desc">Stage a specific file</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">.</span></div><div class="desc">Stage all new and modified files in current directory</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">-p</span></div><div class="desc">Interactively stage specific hunks (partial add)</div></div>
+      </div>
+      <div class="tip" style="margin-bottom:8px;">Create a <code>.gitignore</code> before <code>git add .</code> to exclude files like <code>node_modules/</code> or <code>.env</code>.</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;margin-top:10px;">Initial commit</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git commit <span class="flag">-m</span> <span class="ph">"Initial commit"</span></div><div class="desc">Commit staged files with a message</div></div>
+        <div class="cmd-row"><div class="cmd">git log <span class="flag">--oneline</span></div><div class="desc">Verify the commit was recorded</div></div>
+        <div class="cmd-row"><div class="cmd">git branch <span class="flag">-M</span> main</div><div class="desc">Rename default branch to <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">main</code> (if needed)</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;margin-top:10px;">Connect remote &amp; push</div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git remote add origin <span class="ph">&lt;url&gt;</span></div><div class="desc">Link local repo to a remote (GitHub, GitLab, etc.)</div></div>
+        <div class="cmd-row"><div class="cmd">git remote <span class="flag">-v</span></div><div class="desc">Verify the remote URL is set correctly</div></div>
+        <div class="cmd-row"><div class="cmd">git push <span class="flag">-u</span> origin main</div><div class="desc">Push commits and set upstream tracking branch</div></div>
+      </div>
+      <div class="tip"><code>-u</code> (<code>--set-upstream</code>) is only needed on the first push. After that, <code>git push</code> is enough.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">3</div><div class="section-title">Quick Reference</div></div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;">Using gh (fastest):</div>
+      <div class="quick-ref" style="margin-bottom:10px;">
+        gh repo create <span class="ph">&lt;project-name&gt;</span> <span class="flag">--public --clone</span><br>
+        cd <span class="ph">&lt;project-name&gt;</span><br>
+        touch README.md<br>
+        git add <span class="flag">.</span> &amp;&amp; git commit <span class="flag">-m</span> <span class="ph">"Initial commit"</span><br>
+        git push
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-secondary);margin-bottom:6px;">Using git only:</div>
+      <div class="quick-ref">
+        mkdir <span class="ph">&lt;project&gt;</span> &amp;&amp; cd <span class="ph">&lt;project&gt;</span><br>
+        git init<br>
+        <span class="cmt"># --- create remote on GitHub first, then: ---</span><br>
+        git add <span class="flag">.</span><br>
+        git commit <span class="flag">-m</span> <span class="ph">"Initial commit"</span><br>
+        git branch <span class="flag">-M</span> main<br>
+        git remote add origin <span class="ph">&lt;url&gt;</span><br>
+        git push <span class="flag">-u</span> origin main
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 2 -->
+  <div class="part" id="part2">
+    <div class="part-header"><h2>Part 2 — Clone an Existing Repository</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-purple">remote repo</div><div class="flow-sub">on GitHub/GitLab</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-blue">git clone</div><div class="flow-sub">download</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-teal">explore</div><div class="flow-sub">log, branch, status</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-coral">new branch</div><div class="flow-sub">never work on main</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">develop</div><div class="flow-sub">stay up to date</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">1</div><div class="section-title">Clone a Repository <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git clone <span class="ph">&lt;url&gt;</span></div><div class="desc">Clone a repo into a new folder (folder named after repo)</div></div>
+        <div class="cmd-row"><div class="cmd">git clone <span class="ph">&lt;url&gt;</span> <span class="ph">&lt;directory&gt;</span></div><div class="desc">Clone into a specific folder name</div></div>
+        <div class="cmd-row"><div class="cmd">git clone <span class="flag">--depth 1</span> <span class="ph">&lt;url&gt;</span></div><div class="desc">Shallow clone — latest snapshot only, no full history</div></div>
+        <div class="cmd-row"><div class="cmd">git clone <span class="flag">-b</span> <span class="ph">&lt;branch&gt;</span> <span class="ph">&lt;url&gt;</span></div><div class="desc">Clone and immediately check out a specific branch</div></div>
+      </div>
+      <div class="tip">Get the URL from the GitHub/GitLab repo page — use HTTPS for simplicity, SSH for key-based auth.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">2</div><div class="section-title">Explore After Cloning <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">cd <span class="ph">&lt;project&gt;</span></div><div class="desc">Navigate into the cloned folder</div></div>
+        <div class="cmd-row"><div class="cmd">git log <span class="flag">--oneline -10</span></div><div class="desc">View the last 10 commits</div></div>
+        <div class="cmd-row"><div class="cmd">git branch <span class="flag">-a</span></div><div class="desc">List all local and remote branches</div></div>
+        <div class="cmd-row"><div class="cmd">git remote <span class="flag">-v</span></div><div class="desc">Confirm the remote URL (should be <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">origin</code>)</div></div>
+        <div class="cmd-row"><div class="cmd">git status</div><div class="desc">Confirm you are on the default branch with a clean tree</div></div>
+      </div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum purple">3</div><div class="section-title">Check Out a Branch <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout <span class="ph">&lt;branch&gt;</span></div><div class="desc">Switch to an existing local branch</div></div>
+        <div class="cmd-row"><div class="cmd">git checkout <span class="flag">-b</span> <span class="ph">&lt;branch&gt;</span></div><div class="desc">Create and switch to a new branch</div></div>
+        <div class="cmd-row"><div class="cmd">git checkout <span class="flag">-b</span> <span class="ph">&lt;branch&gt;</span> origin/<span class="ph">&lt;branch&gt;</span></div><div class="desc">Create a local branch tracking an existing remote branch</div></div>
+        <div class="cmd-row"><div class="cmd">git switch <span class="ph">&lt;branch&gt;</span></div><div class="desc">Modern alternative to <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">git checkout &lt;branch&gt;</code></div></div>
+        <div class="cmd-row"><div class="cmd">git switch <span class="flag">-c</span> <span class="ph">&lt;branch&gt;</span></div><div class="desc">Modern alternative to <code style="font-family:JetBrains Mono,monospace;font-size:0.7rem">git checkout -b &lt;branch&gt;</code></div></div>
+      </div>
+      <div class="tip">Always create a new branch before making changes — never work directly on <code>main</code> or <code>dev</code>.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum coral">4</div><div class="section-title">Configure the Clone (If Needed) <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git config user.name <span class="ph">"Your Name"</span></div><div class="desc">Set name for this repo only</div></div>
+        <div class="cmd-row"><div class="cmd">git config user.email <span class="ph">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3baacb683a6aea2aaafeda0acae">[email&#160;protected]</a>"</span></div><div class="desc">Set email for this repo only</div></div>
+        <div class="cmd-row"><div class="cmd">git remote set-url origin <span class="ph">&lt;new-url&gt;</span></div><div class="desc">Change the remote URL (e.g. HTTPS → SSH)</div></div>
+        <div class="cmd-row"><div class="cmd">git remote add upstream <span class="ph">&lt;url&gt;</span></div><div class="desc">Add a second remote (e.g. original repo when working from a fork)</div></div>
+      </div>
+      <div class="note">Use <code>--global</code> to apply settings to all repos, or omit it to apply to this repo only.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">5</div><div class="section-title">Stay Up to Date <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git fetch origin</div><div class="desc">Download remote changes without touching your working tree</div></div>
+        <div class="cmd-row"><div class="cmd">git pull</div><div class="desc">Fetch and merge the tracked remote branch into current branch</div></div>
+        <div class="cmd-row"><div class="cmd">git pull <span class="flag">--rebase</span></div><div class="desc">Fetch and rebase local commits on top of remote (cleaner history)</div></div>
+        <div class="cmd-row"><div class="cmd">git pull origin <span class="ph">&lt;branch&gt;</span></div><div class="desc">Pull a specific remote branch into the current branch</div></div>
+      </div>
+      <div class="tip">Run <code>git fetch origin</code> regularly to stay aware of remote changes without committing to a merge.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">6</div><div class="section-title">Quick Reference</div></div>
+      <div class="quick-ref">
+        git clone <span class="ph">&lt;url&gt;</span><br>
+        cd <span class="ph">&lt;project&gt;</span><br>
+        git branch <span class="flag">-a</span> <span class="cmt"># see all available branches</span><br>
+        git checkout <span class="flag">-b</span> <span class="ph">&lt;your-branch&gt;</span> <span class="cmt"># create a working branch</span><br>
+        <span class="cmt"># --- make your changes, then sync ---</span><br>
+        git fetch origin <span class="cmt"># stay up to date</span><br>
+        git pull <span class="flag">--rebase</span> <span class="cmt"># incorporate remote changes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 3 -->
+  <div class="part" id="part3">
+    <div class="part-header"><h2>Part 3 — Sync Local Changes</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-blue">working dir</div><div class="flow-sub">your local files</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-teal">git add</div><div class="flow-sub">stage</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-purple">git commit</div><div class="flow-sub">local repo</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-coral">git pull</div><div class="flow-sub">sync first</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">git push</div><div class="flow-sub">remote</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">1</div><div class="section-title">Check What Has Changed <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git status</div><div class="desc">Overview of all tracked/untracked changes in working tree</div></div>
+        <div class="cmd-row"><div class="cmd">git status <span class="flag">-s</span></div><div class="desc">Short format — two-letter status codes per file</div></div>
+        <div class="cmd-row"><div class="cmd">git diff</div><div class="desc">Show unstaged line-level changes</div></div>
+        <div class="cmd-row"><div class="cmd">git diff <span class="flag">--staged</span></div><div class="desc">Show staged changes (what will be committed)</div></div>
+      </div>
+      <div class="note">Status codes: <code>??</code> untracked &nbsp;|&nbsp; <code>M</code> modified &nbsp;|&nbsp; <code>A</code> staged new &nbsp;|&nbsp; <code>D</code> deleted &nbsp;|&nbsp; <code>R</code> renamed</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">2</div><div class="section-title">Stage Changes <span class="badge b-local">local</span> <span class="badge b-new">new</span><span class="badge b-change">changed</span><span class="badge b-delete">deleted</span><span class="badge b-move">moved</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">.</span></div><div class="desc"><span class="badge b-new">new</span><span class="badge b-change">changed</span> Stage all new and modified files recursively</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="ph">&lt;file&gt;</span></div><div class="desc"><span class="badge b-new">new</span><span class="badge b-change">changed</span> Stage a specific file</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="ph">&lt;directory&gt;/</span></div><div class="desc"><span class="badge b-new">new</span><span class="badge b-change">changed</span> Stage all changes inside a directory</div></div>
+        <div class="cmd-row"><div class="cmd">git rm <span class="ph">&lt;file&gt;</span></div><div class="desc"><span class="badge b-delete">deleted</span> Stage a deletion and remove file from disk</div></div>
+        <div class="cmd-row"><div class="cmd">git rm <span class="flag">--cached</span> <span class="ph">&lt;file&gt;</span></div><div class="desc"><span class="badge b-delete">deleted</span> Untrack a file but keep it on disk</div></div>
+        <div class="cmd-row"><div class="cmd">git mv <span class="ph">&lt;old&gt;</span> <span class="ph">&lt;new&gt;</span></div><div class="desc"><span class="badge b-move">moved</span> Rename or move a file and stage it atomically</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">-A</span></div><div class="desc"><span class="badge b-new">new</span><span class="badge b-change">changed</span><span class="badge b-delete">deleted</span> Stage everything</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">-p</span></div><div class="desc">Interactively choose which hunks to stage</div></div>
+      </div>
+      <div class="note"><code>git add .</code> stages new + modified but NOT deletions made with plain <code>rm</code>. Use <code>git add -A</code> to catch those too.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum purple">3</div><div class="section-title">Commit <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git commit <span class="flag">-m</span> <span class="ph">"message"</span></div><div class="desc">Commit staged changes with an inline message</div></div>
+        <div class="cmd-row"><div class="cmd">git commit <span class="flag">-am</span> <span class="ph">"message"</span></div><div class="desc">Stage all tracked changes and commit in one step</div></div>
+        <div class="cmd-row"><div class="cmd">git commit <span class="flag">--amend</span></div><div class="desc">Modify the most recent commit (message or staged content)</div></div>
+      </div>
+      <div class="warn"><code>--amend</code> rewrites history — only use it before pushing, never on commits already on the remote.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum coral">4</div><div class="section-title">Pull Before You Push <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git fetch origin</div><div class="desc">Download remote changes without merging</div></div>
+        <div class="cmd-row"><div class="cmd">git pull</div><div class="desc">Fetch and merge remote branch into current branch</div></div>
+        <div class="cmd-row"><div class="cmd">git pull <span class="flag">--rebase</span></div><div class="desc">Fetch and rebase local commits on top of remote (cleaner history)</div></div>
+      </div>
+      <div class="tip">Always pull before pushing to avoid rejected pushes due to diverged history.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">5</div><div class="section-title">Push to Remote <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git push</div><div class="desc">Push committed changes to the tracked remote branch</div></div>
+        <div class="cmd-row"><div class="cmd">git push origin <span class="ph">&lt;branch&gt;</span></div><div class="desc">Push to a specific branch on the remote</div></div>
+        <div class="cmd-row"><div class="cmd">git push <span class="flag">--tags</span></div><div class="desc">Push all local tags to the remote</div></div>
+      </div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum green">6</div><div class="section-title">Undo &amp; Recover <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git restore <span class="ph">&lt;file&gt;</span></div><div class="desc">Discard unstaged changes to a file (restores from last commit)</div></div>
+        <div class="cmd-row"><div class="cmd">git restore <span class="flag">--staged</span> <span class="ph">&lt;file&gt;</span></div><div class="desc">Unstage a file (keeps changes in working tree)</div></div>
+        <div class="cmd-row"><div class="cmd">git stash</div><div class="desc">Temporarily shelve all uncommitted changes</div></div>
+        <div class="cmd-row"><div class="cmd">git stash pop</div><div class="desc">Re-apply the most recently stashed changes</div></div>
+        <div class="cmd-row"><div class="cmd">git revert <span class="ph">&lt;commit&gt;</span></div><div class="desc">Create a new commit that undoes a previous one (safe for shared branches)</div></div>
+      </div>
+      <div class="warn"><code>git restore</code> permanently discards local changes — there is no undo. Use <code>git stash</code> instead if you are unsure.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">7</div><div class="section-title">Quick Reference</div></div>
+      <div class="quick-ref">
+        git status<br>
+        git add <span class="flag">-A</span> <span class="cmt"># stage new + changed + deleted</span><br>
+        git commit <span class="flag">-m</span> <span class="ph">"describe your changes"</span><br>
+        git pull <span class="flag">--rebase</span> <span class="cmt"># sync remote changes first</span><br>
+        git push <span class="cmt"># send to remote</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 4 -->
+  <div class="part" id="part4">
+    <div class="part-header"><h2>Part 4 — Merge to Dev via PR</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-purple">feature branch</div><div class="flow-sub">local + remote</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-blue">git push</div><div class="flow-sub">push branch</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-teal">open PR</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-coral">review</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-amber">merge PR</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">pull dev</div><div class="flow-sub">local sync</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">1</div><div class="section-title">Clean Up &amp; Push Your Branch <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git status</div><div class="desc">Confirm no uncommitted changes remain</div></div>
+        <div class="cmd-row"><div class="cmd">git push <span class="flag">-u</span> origin <span class="ph">&lt;your-branch&gt;</span></div><div class="desc">Push branch to remote and set upstream tracking</div></div>
+      </div>
+      <div class="note">The <code>-u</code> flag is only needed the first time. Subsequent pushes just need <code>git push</code>.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum purple">2</div><div class="section-title">Open a Pull Request <span class="badge b-web">web UI</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">GitHub: Repo → Pull Requests → New pull request</div><div class="desc">base: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">dev</code> &nbsp;|&nbsp; compare: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">&lt;your-branch&gt;</code></div></div>
+        <div class="cmd-row web"><div class="cmd-web">GitLab: Repo → Merge Requests → New merge request</div><div class="desc">source: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">&lt;your-branch&gt;</code> &nbsp;|&nbsp; target: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">dev</code></div></div>
+      </div>
+      <div class="tip">Write a clear PR title and description — what changed, why, and any testing notes. Assign reviewers and link related issues.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">3</div><div class="section-title">Address Review Feedback <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">-A</span> &amp;&amp; git commit <span class="flag">-m</span> <span class="ph">"address review feedback"</span></div><div class="desc">Commit changes requested by reviewers</div></div>
+        <div class="cmd-row"><div class="cmd">git push</div><div class="desc">Push updates — PR refreshes automatically</div></div>
+      </div>
+      <div class="note">Repeat commit + push as many times as needed. The PR always reflects the latest state of your branch.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum coral">4</div><div class="section-title">Resolve Conflicts (If Flagged in the PR) <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout dev &amp;&amp; git pull <span class="flag">--rebase</span> origin dev</div><div class="desc">Sync dev locally first</div></div>
+        <div class="cmd-row"><div class="cmd">git checkout <span class="ph">&lt;your-branch&gt;</span></div><div class="desc">Switch back to your branch</div></div>
+        <div class="cmd-row"><div class="cmd">git merge dev</div><div class="desc">Bring dev changes into your branch to surface conflicts</div></div>
+        <div class="cmd-row"><div class="cmd">nano <span class="ph">&lt;conflicting-file&gt;</span></div><div class="desc">Resolve <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">&lt;&lt;&lt;</code> / <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">===</code> / <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">&gt;&gt;&gt;</code> markers manually</div></div>
+        <div class="cmd-row"><div class="cmd">git add <span class="flag">-A</span> &amp;&amp; git commit &amp;&amp; git push</div><div class="desc">Stage, complete merge commit, push — PR will show no conflicts</div></div>
+      </div>
+      <div class="warn">Every conflict marker must be removed before committing. Leaving one in will break the build.</div>
+      <div class="conflict-block">
+        <span class="c-head">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (dev)</span><br>
+        <span class="c-code">&nbsp;&nbsp;code from dev</span><br>
+        <span class="c-sep">=======</span><br>
+        <span class="c-code">&nbsp;&nbsp;code from your branch</span><br>
+        <span class="c-tail">&gt;&gt;&gt;&gt;&gt;&gt;&gt; your-branch</span>
+      </div>
+      <div class="note" style="margin-top:5px;">Delete the markers, keep whichever code (or combination) is correct, then <code>git add</code> the file.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">5</div><div class="section-title">Merge the PR <span class="badge b-web">web UI</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">Click "Merge pull request" (GitHub) or "Merge" (GitLab)</div><div class="desc">Choose your merge strategy</div></div>
+        <div class="cmd-row web"><div class="cmd-web">Confirm the merge</div><div class="desc">PR is closed; branch is merged into dev on the remote</div></div>
+      </div>
+      <table class="sub-table" style="margin-top:10px;">
+        <tr><th>Strategy</th><th>What it does</th></tr>
+        <tr><td>Merge commit</td><td>Keeps full branch history with a merge commit</td></tr>
+        <tr><td>Squash and merge</td><td>Condenses all branch commits into one commit on dev</td></tr>
+        <tr><td>Rebase and merge</td><td>Replays commits linearly onto dev — no merge commit</td></tr>
+      </table>
+      <div class="tip">Check your team's convention. Most teams standardise on one strategy.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum green">6</div><div class="section-title">Sync Local Dev After the Merge <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout dev</div><div class="desc">Switch to local dev branch</div></div>
+        <div class="cmd-row"><div class="cmd">git pull origin dev</div><div class="desc">Pull the merged state from remote into local dev</div></div>
+      </div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum pink">7</div><div class="section-title">Clean Up <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git branch <span class="flag">-d</span> <span class="ph">&lt;your-branch&gt;</span></div><div class="desc">Delete local branch (platform may auto-delete the remote)</div></div>
+        <div class="cmd-row"><div class="cmd">git push origin <span class="flag">--delete</span> <span class="ph">&lt;your-branch&gt;</span></div><div class="desc">Delete remote branch if not auto-deleted</div></div>
+        <div class="cmd-row"><div class="cmd">git fetch <span class="flag">--prune</span></div><div class="desc">Remove stale remote-tracking references locally</div></div>
+      </div>
+      <div class="note">Use <code>-D</code> instead of <code>-d</code> to force-delete a branch not yet fully merged (use with care).</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum gray">8</div><div class="section-title">Quick Reference</div></div>
+      <div class="quick-ref">
+        <span class="cmt"># --- local: push your branch ---</span><br>
+        git push <span class="flag">-u</span> origin <span class="ph">&lt;your-branch&gt;</span><br>
+        <span class="cmt"># --- web UI: open PR, assign reviewers ---</span><br>
+        <span class="cmt"># --- web UI: iterate on feedback (push more commits as needed) ---</span><br>
+        <span class="cmt"># --- local: if conflicts are flagged in the PR ---</span><br>
+        git checkout dev &amp;&amp; git pull <span class="flag">--rebase</span> origin dev<br>
+        git checkout <span class="ph">&lt;your-branch&gt;</span><br>
+        git merge dev <span class="cmt"># resolve conflicts, then:</span><br>
+        git add <span class="flag">-A</span> &amp;&amp; git commit &amp;&amp; git push<br>
+        <span class="cmt"># --- web UI: merge the PR once approved ---</span><br>
+        <span class="cmt"># --- local: sync and clean up ---</span><br>
+        git checkout dev &amp;&amp; git pull origin dev<br>
+        git branch <span class="flag">-d</span> <span class="ph">&lt;your-branch&gt;</span><br>
+        git fetch <span class="flag">--prune</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PART 5 -->
+  <div class="part" id="part5">
+    <div class="part-header"><h2>Part 5 — Promote Dev to Main</h2></div>
+    <div class="flow-strip">
+      <div class="flow-node"><div class="flow-pill fp-teal">dev</div><div class="flow-sub">fully tested</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-purple">release PR</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-blue">review &amp; approve</div><div class="flow-sub">web UI</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-green">main</div><div class="flow-sub">production</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="flow-pill fp-amber">tag release</div><div class="flow-sub">git tag</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><div class="snum blue">1</div><div class="section-title">Pre-Flight Checks <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout dev &amp;&amp; git pull origin dev</div><div class="desc">Ensure local dev is fully up to date</div></div>
+        <div class="cmd-row"><div class="cmd">git log origin/main..dev <span class="flag">--oneline</span></div><div class="desc">List all commits on dev not yet in main — review before proceeding</div></div>
+        <div class="cmd-row"><div class="cmd">git diff origin/main..dev <span class="flag">--stat</span></div><div class="desc">Summary of files changed between dev and main</div></div>
+        <div class="cmd-row"><div class="cmd">git status</div><div class="desc">Confirm dev is clean with no uncommitted changes</div></div>
+      </div>
+      <div class="warn">Never promote a dev branch that has failing tests, uncommitted changes, or unreviewed commits.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum purple">2</div><div class="section-title">Open a Release PR: dev → main <span class="badge b-web">web UI</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">GitHub: Pull Requests → New pull request</div><div class="desc">base: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">main</code> &nbsp;|&nbsp; compare: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">dev</code></div></div>
+        <div class="cmd-row web"><div class="cmd-web">GitLab: Merge Requests → New merge request</div><div class="desc">source: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">dev</code> &nbsp;|&nbsp; target: <code style="font-size:0.7rem;font-family:JetBrains Mono,monospace">main</code></div></div>
+      </div>
+      <div class="tip">Title the PR clearly, e.g. <code>Release v1.2.0</code>. Include a changelog. Assign senior reviewers — this is going to production.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum teal">3</div><div class="section-title">Review, Approve &amp; Merge the PR <span class="badge b-web">web UI</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row web"><div class="cmd-web">Reviewers approve the PR</div><div class="desc">At least one (preferably two) senior approvals required</div></div>
+        <div class="cmd-row web"><div class="cmd-web">All CI checks pass</div><div class="desc">Tests, linting, security scans — nothing merges red</div></div>
+        <div class="cmd-row web"><div class="cmd-web">Click "Merge pull request" → "Create a merge commit"</div><div class="desc">Use a merge commit to preserve the full dev history on main</div></div>
+      </div>
+      <div class="warn">Do not use squash or rebase merge strategies for a dev → main promotion. A merge commit clearly marks the release point in the history.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum amber">4</div><div class="section-title">Tag the Release <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout main &amp;&amp; git pull origin main</div><div class="desc">Switch to main and sync the merged state</div></div>
+        <div class="cmd-row"><div class="cmd">git tag <span class="flag">-a</span> <span class="ph">v1.2.0</span> <span class="flag">-m</span> <span class="ph">"Release v1.2.0"</span></div><div class="desc">Create an annotated tag at the current HEAD of main</div></div>
+        <div class="cmd-row"><div class="cmd">git push origin <span class="ph">v1.2.0</span></div><div class="desc">Push the tag to the remote</div></div>
+        <div class="cmd-row"><div class="cmd">git tag <span class="flag">-l</span></div><div class="desc">List all tags to verify</div></div>
+      </div>
+      <div class="tip">Use semantic versioning: <code>vMAJOR.MINOR.PATCH</code>. Tags trigger CI/CD pipelines and create release artifacts automatically.</div>
+      <table class="sub-table" style="margin-top:10px;">
+        <tr><th>Increment</th><th>When to use</th></tr>
+        <tr><td><code>MAJOR</code> (v<strong>2</strong>.0.0)</td><td>Breaking changes — not backwards compatible</td></tr>
+        <tr><td><code>MINOR</code> (v1.<strong>2</strong>.0)</td><td>New features — backwards compatible</td></tr>
+        <tr><td><code>PATCH</code> (v1.2.<strong>1</strong>)</td><td>Bug fixes — backwards compatible</td></tr>
+      </table>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum green">5</div><div class="section-title">Sync Dev With Main Post-Merge <span class="badge b-local">local</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row"><div class="cmd">git checkout dev</div><div class="desc">Switch back to dev</div></div>
+        <div class="cmd-row"><div class="cmd">git merge main</div><div class="desc">Bring the merge commit back into dev to keep histories aligned</div></div>
+        <div class="cmd-row"><div class="cmd">git push origin dev</div><div class="desc">Push the updated dev to remote</div></div>
+      </div>
+      <div class="note">Skipping this step causes dev to diverge from main over time, leading to messy future merges.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="snum red">6</div><div class="section-title">Emergency Rollback <span class="badge b-danger">DANGER</span></div></div>
+      <div class="cmd-list">
+        <div class="cmd-row danger"><div class="cmd-danger">git revert HEAD &amp;&amp; git push origin main</div><div class="desc">Safe — creates a new revert commit, preserves full history</div></div>
+        <div class="cmd-row danger"><div class="cmd-danger">git checkout main &amp;&amp; git reset --hard <span style="font-style:italic">&lt;prev-tag&gt;</span></div><div class="desc">Destructive — hard reset to a previous tag</div></div>
+        <div class="cmd-row danger"><div class="cmd-danger">git push --force-with-lease origin main</div><div class="desc">Force-push after hard reset — only if branch protections allow it</div></div>
+      </div>
+      <div class="err">Force-pushing to main is destructive and rewrites shared history. Always prefer <code>git revert</code>. Only use <code>reset + force-push</code> as a last resort with full team awareness.</div>
+    </div>
+    <hr>
+
+    <div class="section">
+      <div class="section-label"><div class="s

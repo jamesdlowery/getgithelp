@@ -1,0 +1,88 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red99\green56\blue6;
+\red163\green45\blue45;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- Clone Existing Repo Cheat Sheet\b0\par}
+{\f2\fs18\cf4 Linux \u183? clone \u183? explore \u183? configure \u183? work\par}
+\par
+{\f2\fs18\cf4 Workflow: Remote repo \u8594? git clone \u8594? local working copy \u8594? branch \u8594? develop\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Clone a Repository\b0\par}
+\par
+{\f1\fs20\cf2   git clone \cf3<url>\cf4                          \cf0 # clone into folder named after repo\par
+\cf2   git clone \cf3<url> <directory>\cf4              \cf0 # clone into a specific folder name\par
+\cf2   git clone --depth 1 \cf3<url>\cf4                \cf0 # shallow clone -- latest snapshot only\par
+\cf2   git clone -b \cf3<branch> <url>\cf4               \cf0 # clone and check out a specific branch\par}
+\par
+{\f2\fs18\cf5 TIP: Get the URL from the GitHub/GitLab repo page.\par
+Use HTTPS for simplicity, SSH for key-based auth.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Explore After Cloning\b0\par}
+\par
+{\f1\fs20\cf2   cd \cf3<project>\cf4                            \cf0 # navigate into the cloned folder\par
+\cf2   git log --oneline -10\cf4                   \cf0 # view the last 10 commits\par
+\cf2   git branch -a\cf4                           \cf0 # list all local and remote branches\par
+\cf2   git remote -v\cf4                           \cf0 # confirm the remote URL (should be origin)\par
+\cf2   git status\cf4                              \cf0 # confirm clean tree on default branch\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Check Out a Branch\b0\par}
+\par
+{\f1\fs20\cf2   git checkout \cf3<branch>\cf4                    \cf0 # switch to an existing local branch\par
+\cf2   git checkout -b \cf3<branch>\cf4                  \cf0 # create and switch to a new branch\par
+\cf2   git checkout -b \cf3<branch>\cf2  origin/\cf3<branch>\cf4   \cf0 # track an existing remote branch\par
+\cf2   git switch \cf3<branch>\cf4                      \cf0 # modern alternative to checkout\par
+\cf2   git switch -c \cf3<branch>\cf4                   \cf0 # modern alternative to checkout -b\par}
+\par
+{\f2\fs18\cf5 TIP: Always create a new branch before making changes.\par
+Never work directly on main or dev.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Configure the Clone (If Needed)\b0\par}
+\par
+{\f1\fs20\cf2   git config user.name \cf3"Your Name"\cf4          \cf0 # set name for this repo only\par
+\cf2   git config user.email \cf3"you@email.com"\cf4     \cf0 # set email for this repo only\par
+\cf2   git remote set-url origin \cf3<new-url>\cf4       \cf0 # change remote URL (e.g. HTTPS \u8594? SSH)\par
+\cf2   git remote add upstream \cf3<url>\cf4             \cf0 # add second remote (e.g. fork upstream)\par}
+\par
+{\f2\fs18\cf4 TIP: Use \cf1\f1 --global\f2\cf4  to apply settings to all repos, or omit it for this repo only.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Stay Up to Date\b0\par}
+\par
+{\f1\fs20\cf2   git fetch origin\cf4                        \cf0 # download remote changes, no merge\par
+\cf2   git pull\cf4                                \cf0 # fetch and merge tracked remote branch\par
+\cf2   git pull --rebase\cf4                       \cf0 # fetch and rebase (cleaner history)\par
+\cf2   git pull origin \cf3<branch>\cf4                  \cf0 # pull a specific remote branch\par}
+\par
+{\f2\fs18\cf5 TIP: Run \cf1\f1 git fetch origin\f2\cf5  regularly to stay aware of remote changes\par
+without committing to a merge.\par}
+\par\line
+
+{\f0\fs24\b\cf1 6. Full Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf2   git clone \cf3<url>\cf1\par
+  cd \cf3<project>\cf1\par
+  git branch -a\cf4                           \cf0 # see all available branches\par
+\cf2   git checkout -b \cf3<your-branch>\cf4              \cf0 # create a working branch\par
+\cf4   # --- make your changes, then sync ---\par
+\cf2   git fetch origin\cf4                        \cf0 # stay up to date\par
+\cf2   git pull --rebase\cf4                       \cf0 # incorporate remote changes\par}
+\par
+}

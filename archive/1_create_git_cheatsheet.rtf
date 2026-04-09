@@ -1,0 +1,78 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red240\green240\blue240;
+\red15\green110\blue86;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- New Repo Cheat Sheet\b0\fs20\cf4  (Linux)\par}
+\par
+{\f2\fs18\cf4 init \u183? stage \u183? commit \u183? push\par}
+\par
+{\f0\fs20\cf4\line
+Workflow: Working Dir \u8594? Staging Area (git add) \u8594? Local Repo (git commit) \u8594? Remote (git push)\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Create & Initialize\b0\par}
+\par
+{\f1\fs20\cf2   mkdir \cf3<project-name>\cf1\par
+  cd \cf3<project-name>\cf1\par
+  git init\par}
+\par
+{\f2\fs18\cf4 TIP: Already have a remote? Use \cf1\f1 git clone <url>\f2\cf4  instead -- no need to git init.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Add Content\b0\par}
+\par
+{\f1\fs20\cf2   touch README.md\cf4                         \cf0 # create empty file\par
+\cf2   echo \cf3"# My Project"\cf2  >> README.md\cf4      \cf0 # append content via terminal\par
+\cf2   git status\cf4                               \cf0 # see untracked/modified files\par
+\cf2   git add \cf3<file>\cf4                           \cf0 # stage a specific file\par
+\cf2   git add \cf2 .\cf4                               \cf0 # stage ALL new and modified files\par
+\cf2   git add -p\cf4                               \cf0 # interactively stage hunks\par}
+\par
+{\f2\fs18\cf4 TIP: Create a \cf1\f1 .gitignore\f2\cf4  before \cf1\f1 git add .\f2\cf4  to exclude files like \cf1\f1 node_modules/\f2\cf4  or \cf1\f1 .env\f2\cf4 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Initial Commit\b0\par}
+\par
+{\f1\fs20\cf2   git commit -m \cf3"Initial commit"\cf4        \cf0 # commit staged files\par
+\cf2   git log --oneline\cf4                        \cf0 # verify commit was recorded\par
+\cf2   git branch -M main\cf4                       \cf0 # rename branch to main (if needed)\par}
+\par
+{\f2\fs18\cf4 TIP: First-time setup -- configure identity once:\par
+  \cf1\f1 git config --global user.name "Your Name"\par
+  git config --global user.email "you@email.com"\f2\cf4\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Connect Remote & Push\b0\par}
+\par
+{\f1\fs20\cf2   git remote add origin \cf3<url>\cf4          \cf0 # link to remote (GitHub, GitLab, etc.)\par
+\cf2   git remote -v\cf4                            \cf0 # verify remote URL\par
+\cf2   git push -u origin main\cf4                  \cf0 # push and set upstream tracking\par}
+\par
+{\f2\fs18\cf4 TIP: \cf1\f1 -u\f2\cf4  (--set-upstream) is only needed on the first push. After that, \cf1\f1 git push\f2\cf4  is enough.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Full Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf2   mkdir \cf3<project>\cf2  && cd \cf3<project>\cf1\par
+  git init\par
+\cf4   # --- add your files ---\par
+\cf2   git add .\par
+  git commit -m \cf3"Initial commit"\cf1\par
+  git branch -M main\par
+  git remote add origin \cf3<url>\cf1\par
+  git push -u origin main\par}
+\par
+}

@@ -1,0 +1,94 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red83\green51\blue6;
+\red60\green40\blue137;
+\red163\green45\blue45;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- Sync Local Changes Cheat Sheet\b0\par}
+{\f2\fs18\cf3 Linux \u183? status \u183? stage \u183? commit \u183? push\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Check What Has Changed\b0\par}
+\par
+{\f1\fs20\cf2   git status\cf3                    \cf0 # overview of all changes\par
+  git status -s\cf3                 \cf0 # short two-letter status codes\par
+  git diff\cf3                      \cf0 # show unstaged line-level changes\par
+  git diff --staged\cf3             \cf0 # show staged changes (what will be committed)\par}
+\par
+{\f2\fs18\cf4 Status codes:  ?? untracked  |  M modified  |  A staged new  |  D deleted  |  R renamed\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Stage Changes  [new]  [changed]  [deleted]  [moved]\b0\par}
+\par
+{\f1\fs20\cf2   git add .\cf3                     \cf0 # [new][changed] stage all new and modified files\par
+  git add \cf3<file>\cf3                \cf0 # [new][changed] stage a specific file\par
+  git add \cf3<directory>/\cf3          \cf0 # [new][changed] stage all changes in a directory\par
+  git rm \cf3<file>\cf3                 \cf0 # [deleted] stage deletion and remove from disk\par
+  git rm --cached \cf3<file>\cf3        \cf0 # [deleted] untrack a file but keep it on disk\par
+  git mv \cf3<old> <new>\cf3            \cf0 # [moved] rename or move and stage atomically\par
+  git add -A\cf3                    \cf0 # [new][changed][deleted] stage everything\par
+  git add -p\cf3                    \cf0 # interactively choose hunks to stage\par}
+\par
+{\f2\fs18\cf4 NOTE: \cf1\f1 git add .\f2\cf4  stages new + modified but NOT deletions made with plain \cf1\f1 rm\f2\cf4 .\par
+Use \cf1\f1 git add -A\f2\cf4  to catch deleted files too.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Commit\b0\par}
+\par
+{\f1\fs20\cf2   git commit -m \cf3"message"\cf3        \cf0 # commit staged changes\par
+  git commit -am \cf3"message"\cf3      \cf0 # stage all tracked changes and commit in one step\par
+  git commit --amend\cf3            \cf0 # modify the most recent commit\par}
+\par
+{\f2\fs18\cf8 WARNING: \cf1\f1 --amend\f2\cf8  rewrites history. Only use it before pushing -- never on commits already on the remote.\cf4\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Pull Before You Push\b0\par}
+\par
+{\f1\fs20\cf2   git fetch origin\cf3              \cf0 # download remote changes without merging\par
+  git pull\cf3                      \cf0 # fetch and merge remote branch into current\par
+  git pull --rebase\cf3             \cf0 # fetch and rebase local commits on top of remote\par}
+\par
+{\f2\fs18\cf4 TIP: Always pull before pushing to avoid rejected pushes due to diverged history.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Push to Remote\b0\par}
+\par
+{\f1\fs20\cf2   git push\cf3                      \cf0 # push to tracked remote branch\par
+  git push origin \cf3<branch>\cf3      \cf0 # push to a specific branch\par
+  git push --tags\cf3               \cf0 # push all local tags to remote\par}
+\par\line
+
+{\f0\fs24\b\cf1 6. Undo & Recover\b0\par}
+\par
+{\f1\fs20\cf2   git restore \cf3<file>\cf3             \cf0 # discard unstaged changes (restores from last commit)\par
+  git restore --staged \cf3<file>\cf3    \cf0 # unstage a file (keeps changes in working tree)\par
+  git stash\cf3                     \cf0 # shelve all uncommitted changes temporarily\par
+  git stash pop\cf3                 \cf0 # re-apply most recently stashed changes\par
+  git revert \cf3<commit>\cf3            \cf0 # new commit that undoes a previous one (safe)\par}
+\par
+{\f2\fs18\cf8 WARNING: \cf1\f1 git restore\f2\cf8  permanently discards local changes with no undo.\par
+Use \cf1\f1 git stash\f2\cf8  instead if you are unsure.\cf4\par}
+\par\line
+
+{\f0\fs24\b\cf1 7. Typical Sync Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf2   git status\par
+  git add -A\cf3                    \cf0 # stage new + changed + deleted\par
+\cf2   git commit -m \cf3"describe your changes"\cf1\par
+  git pull --rebase\cf3             \cf0 # sync remote changes first\par
+\cf2   git push\cf3                      \cf0 # send to remote\par}
+\par
+}

@@ -1,0 +1,110 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red99\green56\blue6;
+\red83\green36\blue137;
+\red163\green45\blue45;
+\red120\green30\blue30;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs32\b\cf1 Git --- Promote Dev to Main Cheat Sheet\b0\par}
+{\f2\fs18\cf4 Linux \u183? dev \u8594? release PR \u8594? main \u8594? tag \u8594? deploy\par}
+\par
+{\f2\fs18\cf4 Flow: dev (tested) \u8594? release PR \u8594? main (production) \u8594? tag release \u8594? deploy\par}
+\par
+{\f2\fs18\cf4 Legend:  [local] = terminal  |  [web UI] = GitHub or GitLab  |  [DANGER] = production impact\par}
+\par\line
+
+{\f0\fs24\b\cf1 1. Pre-Flight Checks  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev && git pull origin dev\cf4          \cf0 # ensure dev is up to date\par
+  git log origin/main..dev --oneline\cf4             \cf0 # review commits not yet in main\par
+  git diff origin/main..dev --stat\cf4                \cf0 # summary of changed files\par
+  git status\cf4                                      \cf0 # confirm dev is clean\par}
+\par
+{\f2\fs18\cf8 WARNING: Never promote a dev branch with failing tests, uncommitted changes, or unreviewed commits.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2. Open a Release PR: dev \u8594? main  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   GitHub:  Pull Requests \u8594? New pull request\par
+           base: main  |  compare: dev\par
+\par
+   GitLab:  Merge Requests \u8594? New merge request\par
+            source: dev  |  target: main\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Title the PR clearly, e.g. "Release v1.2.0". Include a changelog.\par
+Assign senior reviewers -- this is going to production.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3. Review, Approve & Merge the PR  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   - Reviewers approve the PR (at least one senior approval required)\par
+   - All CI checks pass (tests, linting, security scans -- nothing merges red)\par
+   - Click "Merge pull request" \u8594? "Create a merge commit"\cf4\par}
+\par
+{\f2\fs18\cf8 WARNING: Do not use squash or rebase merge for dev \u8594? main.\par
+A merge commit clearly marks the release point in history.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4. Tag the Release  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout main && git pull origin main\cf4        \cf0 # sync the merged state\par
+  git tag -a \cf3 v1.2.0\cf2  -m \cf3"Release v1.2.0"\cf4              \cf0 # annotated tag at HEAD of main\par
+  git push origin \cf3 v1.2.0\cf4                           \cf0 # push tag to remote\par
+  git tag -l\cf4                                          \cf0 # list all tags to verify\par}
+\par
+{\f2\fs18\cf5 TIP: Use semantic versioning: vMAJOR.MINOR.PATCH\par
+  MAJOR (v2.0.0) -- breaking changes, not backwards compatible\par
+  MINOR (v1.2.0) -- new features, backwards compatible\par
+  PATCH (v1.2.1) -- bug fixes, backwards compatible\par}
+\par\line
+
+{\f0\fs24\b\cf1 5. Sync Dev With Main Post-Merge  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev\cf4                                 \cf0 # switch back to dev\par
+  git merge main\cf4                                   \cf0 # bring merge commit into dev\par
+  git push origin dev\cf4                              \cf0 # push updated dev to remote\par}
+\par
+{\f2\fs18\cf4 NOTE: Skipping this causes dev to diverge from main, leading to messy future merges.\par}
+\par\line
+
+{\f0\fs24\b\cf1 6. Emergency Rollback  [DANGER]\b0\par}
+\par
+{\f2\fs18\cf9 SAFE (preferred):\par}
+{\f1\fs20\cf2   git revert HEAD && git push origin main\cf4          \cf0 # new revert commit, history preserved\par}
+\par
+{\f2\fs18\cf9 DESTRUCTIVE (last resort only):\par}
+{\f1\fs20\cf2   git checkout main && git reset --hard \cf3<prev-tag>\cf4  \cf0 # hard reset to previous tag\par
+  git push --force-with-lease origin main\cf4          \cf0 # force-push (if branch protections allow)\par}
+\par
+{\f2\fs18\cf9 DANGER: Force-pushing to main rewrites shared history.\par
+Always prefer git revert. Only reset + force-push as a last resort with full team awareness.\par}
+\par\line
+
+{\f0\fs24\b\cf1 7. Full Sequence (Quick Reference)\b0\par}
+\par
+{\f1\fs20\cf4   # --- local: pre-flight ---\par
+\cf2   git checkout dev && git pull origin dev\par
+  git log origin/main..dev --oneline\cf4              \cf0 # review commits shipping to prod\par
+\cf4   # --- web UI: open PR dev \u8594? main, approvals, CI green, merge ---\par
+   # --- local: tag the release ---\par
+\cf2   git checkout main && git pull origin main\par
+  git tag -a \cf3 v1.2.0\cf2  -m \cf3"Release v1.2.0"\cf1\par
+  git push origin \cf3 v1.2.0\cf4\par
+   # --- local: sync dev with main ---\par
+\cf2   git checkout dev\par
+  git merge main && git push origin dev\par}
+\par
+}

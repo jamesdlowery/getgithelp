@@ -1,0 +1,547 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Georgia;}
+{\f1\fmodern\fcharset0 Courier New;}
+{\f2\fswiss\fcharset0 Arial;}
+}
+{\colortbl;
+\red0\green0\blue0;
+\red24\green95\blue165;
+\red153\green60\blue29;
+\red80\green80\blue80;
+\red15\green110\blue86;
+\red99\green56\blue6;
+\red83\green36\blue137;
+\red163\green45\blue45;
+\red120\green30\blue30;
+}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+{\f0\fs36\b\cf1 Git Cheat Sheets\b0\par}
+{\f2\fs18\cf4 Linux \u183? A complete reference from first-time setup to production\par}
+\par
+{\f0\fs20\b\cf1 Table of Contents\b0\par}
+{\f2\fs18\cf2   0. First-time GitHub setup\par
+  1. Create a new repository\par
+  2. Clone an existing repository\par
+  3. Sync local changes\par
+  4. Merge to dev via PR\par
+  5. Promote dev to main\par}
+\par
+{\f2\fs18\cf4 Legend:  [local] = terminal  |  [web UI] = GitHub or GitLab  |  [run once] = one-time global  |  [DANGER] = production impact\par}
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 0 -- First-Time GitHub Setup\b0\par}
+{\f2\fs18\cf4 Flow: install git \u8594? global config \u8594? GitHub account \u8594? authenticate \u8594? credential store \u8594? verify\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.1 \u183? Install Git  [local]\b0\par}
+\par
+{\f1\fs20\cf2   sudo apt update && sudo apt install -y git\cf4   \cf0 # Debian / Ubuntu / Mint\par
+\cf2   sudo dnf install -y git\cf4                      \cf0 # Fedora / RHEL / CentOS\par
+\cf2   sudo pacman -S git\cf4                           \cf0 # Arch / Manjaro\par
+\cf2   git --version\cf4                               \cf0 # confirm installation\par}
+\par
+{\f2\fs18\cf5 TIP: Git 2.28+ recommended. To update on older Debian/Ubuntu:\par}
+{\f1\fs18\cf2   sudo add-apt-repository ppa:git-core/ppa\par
+  sudo apt update && sudo apt install -y git\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.2 \u183? Global Identity & Config  [run once]\b0\par}
+\par
+{\f1\fs20\cf2   git config --global user.name \cf3"Your Name"\cf4            \cf0 # display name in all commits\par
+\cf2   git config --global user.email \cf3"you@email.com"\cf4       \cf0 # must match GitHub account email\par
+\cf2   git config --global init.defaultBranch main\cf4          \cf0 # default branch name for new repos\par
+\cf2   git config --global core.editor nano\cf4                 \cf0 # default editor (nano, vim, etc.)\par
+\cf2   git config --global pull.rebase true\cf4                 \cf0 # rebase instead of merge on git pull\par
+\cf2   git config --global color.ui auto\cf4                    \cf0 # enable coloured terminal output\par
+\cf2   git config --global --list\cf4                           \cf0 # review all global settings\par}
+\par
+{\f2\fs18\cf4 NOTE: Config stored in \cf1\f1 ~/.gitconfig\f2\cf4 . Edit directly with \cf1\f1 nano ~/.gitconfig\f2\cf4 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.3 \u183? Create / Configure GitHub Account  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   - Sign up or log in at github.com (same email as user.email above)\par
+   - Settings \u8594? Emails \u8594? verify your email address\par
+   - Settings \u8594? Profile \u8594? add name, avatar (optional)\par
+   - Settings \u8594? Security \u8594? enable two-factor authentication (2FA)\cf4\par}
+\par
+{\f2\fs18\cf8 WARNING: GitHub no longer accepts plain passwords. Use a PAT or SSH key.\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.4 \u183? Choose an Authentication Method\b0\par}
+\par
+{\f2\fs18\cf4   Personal Access Token (PAT) -- HTTPS:\par
+    Simpler setup. Token acts as password. Works anywhere.\par
+    Best for getting started quickly.\par
+\par
+   SSH Key -- SSH:\par
+    More secure. No token to expire. Password-free after setup.\par
+    Preferred for daily development work.\par}
+\par
+{\f2\fs18\cf4 NOTE: You only need one method.\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.5 \u183? Option A -- Personal Access Token (PAT)  [HTTPS]\b0\par}
+\par
+{\f2\fs18\b\cf1 Generate the token  [web UI]\b0\par}
+{\f2\fs20\cf7   GitHub \u8594? Settings \u8594? Developer settings \u8594? Personal access tokens\par
+   \u8594? Tokens (classic) \u8594? Generate new token\par
+   Set expiry, tick scopes: repo, workflow\par
+   Copy immediately -- shown only once. Store in a password manager.\cf4\par}
+\par
+{\f2\fs18\b\cf1 Store the token  [local]\b0\par}
+{\f1\fs20\cf2   git config --global credential.helper store\cf4               \cf0 # plaintext ~/ .git-credentials\par
+\cf2   git config --global credential.helper 'cache --timeout=3600'\cf4  \cf0 # memory cache 1hr\par
+\cf2   git config --global credential.helper \par
+     /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret\cf4  \cf0 # GNOME Keyring\par}
+\par
+{\f2\fs18\cf4 NOTE: First \cf1\f1 git push\f2\cf4  prompts for username + token. Stored automatically after that.\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.6 \u183? Option B -- SSH Key  [SSH]\b0\par}
+\par
+{\f1\fs20\cf2   ssh-keygen -t ed25519 -C \cf3"you@email.com"\cf4          \cf0 # generate Ed25519 key pair\par
+\cf2   eval "$(ssh-agent -s)"\cf4                           \cf0 # start SSH agent\par
+\cf2   ssh-add ~/.ssh/id_ed25519\cf4                       \cf0 # add private key to agent\par
+\cf2   cat ~/.ssh/id_ed25519.pub\cf4                       \cf0 # copy entire output\par}
+\par
+{\f2\fs20\cf7   GitHub \u8594? Settings \u8594? SSH and GPG keys \u8594? New SSH key\par
+   Paste the public key, give it a title, save\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Add to \cf1\f1 ~/.ssh/config\f2\cf5  for automatic key loading:\par}
+{\f1\fs18\cf4   Host github.com\par
+     AddKeysToAgent yes\par
+     IdentityFile ~/.ssh/id_ed25519\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.7 \u183? Verify the Connection  [local]\b0\par}
+\par
+{\f1\fs20\cf2   ssh -T git@github.com\cf4                  \cf0 # expect "Hi <user>! You've successfully authenticated"\par
+\cf2   git config --global --list\cf4             \cf0 # confirm all global settings\par
+\cf2   git clone git@github.com:\cf3<user>/<repo>\cf2 .git\cf4   \cf0 # SSH clone test\par
+\cf2   git clone https://github.com/\cf3<user>/<repo>\cf2 .git\cf4 \cf0 # HTTPS clone test\par}
+\par
+{\f2\fs18\cf5 TIP: \cf1\f1 ssh -vT git@github.com\f2\cf5  for verbose output if connection fails.\par}
+\par\line
+
+{\f0\fs24\b\cf1 0.8 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf4   # --- install ---\par
+\cf2   sudo apt install -y git && git --version\cf4\par
+   # --- global config ---\par
+\cf2   git config --global user.name \cf3"Your Name"\cf1\par
+  git config --global user.email \cf3"you@email.com"\cf1\par
+  git config --global init.defaultBranch main\par
+  git config --global pull.rebase true\cf4\par
+   # --- SSH key (recommended) ---\par
+\cf2   ssh-keygen -t ed25519 -C \cf3"you@email.com"\cf1\par
+  eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519\par
+  cat ~/.ssh/id_ed25519.pub\cf4   \cf0 # paste into GitHub \u8594? Settings \u8594? SSH keys\par
+\cf4   # --- verify ---\par
+\cf2   ssh -T git@github.com\par}
+\par
+{\f0\fs20\b\cf1 Legend\b0\par}
+{\f2\fs18\cf4   [local]   = command run in your terminal\par
+  [web UI]  = action taken in GitHub or GitLab\par
+  [DANGER]  = production impact -- proceed with care\par}
+
+\par\page
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 1 -- Create a New Repository\b0\par}
+{\f2\fs18\cf4 Flow: create folder \u8594? git init \u8594? add files \u8594? commit \u8594? connect remote \u8594? push\par}
+\par\line
+
+{\f0\fs24\b\cf1 1.1 \u183? Create & Initialize  [local]\b0\par}
+\par
+{\f1\fs20\cf2   mkdir \cf3<project-name>\cf4                  \cf0 # create a new project folder\par
+\cf2   cd \cf3<project-name>\cf4                      \cf0 # navigate into that folder\par
+\cf2   git init\cf4                             \cf0 # initialize an empty Git repo (creates .git/)\par}
+\par
+{\f2\fs18\cf5 TIP: Already have a remote? Use \cf1\f1 git clone <url>\f2\cf5  instead -- no need to git init.\par}
+\par\line
+
+{\f0\fs24\b\cf1 1.2 \u183? Add Content  [local]\b0\par}
+\par
+{\f1\fs20\cf2   touch README.md\cf4                      \cf0 # create an empty README file\par
+\cf2   echo \cf3"# My Project"\cf2  >> README.md\cf4      \cf0 # append content via terminal\par
+\cf2   git status\cf4                           \cf0 # see untracked/modified files\par
+\cf2   git add \cf3<file>\cf4                       \cf0 # stage a specific file\par
+\cf2   git add .\cf4                            \cf0 # stage all new and modified files\par
+\cf2   git add -p\cf4                           \cf0 # interactively stage specific hunks\par}
+\par
+{\f2\fs18\cf5 TIP: Create a \cf1\f1 .gitignore\f2\cf5  before \cf1\f1 git add .\f2\cf5  to exclude files like \cf1\f1 node_modules/\f2\cf5  or \cf1\f1 .env\f2\cf5 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 1.3 \u183? Initial Commit  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git commit -m \cf3"Initial commit"\cf4       \cf0 # commit staged files\par
+\cf2   git log --oneline\cf4                    \cf0 # verify the commit was recorded\par
+\cf2   git branch -M main\cf4                   \cf0 # rename branch to main (if needed)\par}
+\par
+{\f2\fs18\cf5 TIP: First-time setup -- configure your identity once:\par}
+{\f1\fs18\cf2   git config --global user.name \cf3"Your Name"\cf1\par
+  git config --global user.email \cf3"you@email.com"\cf4\par}
+\par\line
+
+{\f0\fs24\b\cf1 1.4 \u183? Connect Remote & Push  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git remote add origin \cf3<url>\cf4           \cf0 # link local repo to a remote\par
+\cf2   git remote -v\cf4                        \cf0 # verify the remote URL\par
+\cf2   git push -u origin main\cf4              \cf0 # push and set upstream tracking\par}
+\par
+{\f2\fs18\cf5 TIP: \cf1\f1 -u\f2\cf5  (--set-upstream) is only needed on the first push. After that, \cf1\f1 git push\f2\cf5  is enough.\par}
+\par\line
+
+{\f0\fs24\b\cf1 1.5 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf2   mkdir \cf3<project>\cf2  && cd \cf3<project>\cf1\par
+  git init\cf4\par
+   # --- add your files ---\par
+\cf2   git add .\par
+  git commit -m \cf3"Initial commit"\cf1\par
+  git branch -M main\par
+  git remote add origin \cf3<url>\cf1\par
+  git push -u origin main\par}
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 2 -- Clone an Existing Repository\b0\par}
+{\f2\fs18\cf4 Flow: remote repo \u8594? git clone \u8594? local working copy \u8594? branch \u8594? develop\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.1 \u183? Clone a Repository  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git clone \cf3<url>\cf4                       \cf0 # clone into folder named after repo\par
+\cf2   git clone \cf3<url> <directory>\cf4           \cf0 # clone into a specific folder name\par
+\cf2   git clone --depth 1 \cf3<url>\cf4             \cf0 # shallow clone -- latest snapshot only\par
+\cf2   git clone -b \cf3<branch> <url>\cf4            \cf0 # clone and check out a specific branch\par}
+\par
+{\f2\fs18\cf5 TIP: Get the URL from the GitHub/GitLab repo page.\par
+Use HTTPS for simplicity, SSH for key-based auth.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.2 \u183? Explore After Cloning  [local]\b0\par}
+\par
+{\f1\fs20\cf2   cd \cf3<project>\cf4                          \cf0 # navigate into the cloned folder\par
+\cf2   git log --oneline -10\cf4                \cf0 # view the last 10 commits\par
+\cf2   git branch -a\cf4                        \cf0 # list all local and remote branches\par
+\cf2   git remote -v\cf4                        \cf0 # confirm the remote URL (should be origin)\par
+\cf2   git status\cf4                           \cf0 # confirm clean tree on default branch\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.3 \u183? Check Out a Branch  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout \cf3<branch>\cf4                  \cf0 # switch to an existing local branch\par
+\cf2   git checkout -b \cf3<branch>\cf4               \cf0 # create and switch to a new branch\par
+\cf2   git checkout -b \cf3<branch>\cf2  origin/\cf3<branch>\cf4 \cf0 # track an existing remote branch\par
+\cf2   git switch \cf3<branch>\cf4                    \cf0 # modern alternative to checkout\par
+\cf2   git switch -c \cf3<branch>\cf4                 \cf0 # modern alternative to checkout -b\par}
+\par
+{\f2\fs18\cf5 TIP: Always create a new branch before making changes.\par
+Never work directly on main or dev.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.4 \u183? Configure the Clone (If Needed)  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git config user.name \cf3"Your Name"\cf4        \cf0 # set name for this repo only\par
+\cf2   git config user.email \cf3"you@email.com"\cf4   \cf0 # set email for this repo only\par
+\cf2   git remote set-url origin \cf3<new-url>\cf4     \cf0 # change remote URL (e.g. HTTPS \u8594? SSH)\par
+\cf2   git remote add upstream \cf3<url>\cf4           \cf0 # add second remote (e.g. fork upstream)\par}
+\par
+{\f2\fs18\cf4 TIP: Use \cf1\f1 --global\f2\cf4  to apply settings to all repos, or omit it for this repo only.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.5 \u183? Stay Up to Date  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git fetch origin\cf4                     \cf0 # download remote changes, no merge\par
+\cf2   git pull\cf4                             \cf0 # fetch and merge tracked remote branch\par
+\cf2   git pull --rebase\cf4                    \cf0 # fetch and rebase (cleaner history)\par
+\cf2   git pull origin \cf3<branch>\cf4               \cf0 # pull a specific remote branch\par}
+\par
+{\f2\fs18\cf5 TIP: Run \cf1\f1 git fetch origin\f2\cf5  regularly to stay aware of remote changes\par
+without committing to a merge.\par}
+\par\line
+
+{\f0\fs24\b\cf1 2.6 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf2   git clone \cf3<url>\cf1\par
+  cd \cf3<project>\cf4\par
+  \cf0 # see all available branches\par
+\cf2   git branch -a\par
+  git checkout -b \cf3<your-branch>\cf4               \cf0 # create a working branch\par
+\cf4   # --- make your changes, then sync ---\par
+\cf2   git fetch origin\cf4                     \cf0 # stay up to date\par
+\cf2   git pull --rebase\cf4                    \cf0 # incorporate remote changes\par}
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 3 -- Sync Local Changes\b0\par}
+{\f2\fs18\cf4 Flow: working dir \u8594? stage (git add) \u8594? commit \u8594? pull \u8594? push\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.1 \u183? Check What Has Changed  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git status\cf4                           \cf0 # overview of all changes\par
+\cf2   git status -s\cf4                        \cf0 # short two-letter status codes\par
+\cf2   git diff\cf4                             \cf0 # show unstaged line-level changes\par
+\cf2   git diff --staged\cf4                    \cf0 # show staged changes (what will be committed)\par}
+\par
+{\f2\fs18\cf4 Status codes:  ?? untracked  |  M modified  |  A staged new  |  D deleted  |  R renamed\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.2 \u183? Stage Changes  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git add .\cf4                            \cf0 # [new][changed] stage all new and modified files\par
+\cf2   git add \cf3<file>\cf4                       \cf0 # [new][changed] stage a specific file\par
+\cf2   git add \cf3<directory>/\cf4                 \cf0 # [new][changed] stage all changes in a directory\par
+\cf2   git rm \cf3<file>\cf4                        \cf0 # [deleted] stage deletion, remove from disk\par
+\cf2   git rm --cached \cf3<file>\cf4               \cf0 # [deleted] untrack file, keep on disk\par
+\cf2   git mv \cf3<old> <new>\cf4                   \cf0 # [moved] rename/move and stage atomically\par
+\cf2   git add -A\cf4                           \cf0 # [new][changed][deleted] stage everything\par
+\cf2   git add -p\cf4                           \cf0 # interactively choose hunks to stage\par}
+\par
+{\f2\fs18\cf4 NOTE: \cf1\f1 git add .\f2\cf4  stages new + modified but NOT deletions made with plain \cf1\f1 rm\f2\cf4 .\par
+Use \cf1\f1 git add -A\f2\cf4  to catch those too.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.3 \u183? Commit  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git commit -m \cf3"message"\cf4              \cf0 # commit staged changes\par
+\cf2   git commit -am \cf3"message"\cf4             \cf0 # stage tracked changes and commit in one step\par
+\cf2   git commit --amend\cf4                   \cf0 # modify the most recent commit\par}
+\par
+{\f2\fs18\cf8 WARNING: \cf1\f1 --amend\f2\cf8  rewrites history. Only use before pushing, never after.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.4 \u183? Pull Before You Push  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git fetch origin\cf4                     \cf0 # download remote changes without merging\par
+\cf2   git pull\cf4                             \cf0 # fetch and merge remote branch\par
+\cf2   git pull --rebase\cf4                    \cf0 # fetch and rebase (cleaner history)\par}
+\par
+{\f2\fs18\cf5 TIP: Always pull before pushing to avoid rejected pushes.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.5 \u183? Push to Remote  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git push\cf4                             \cf0 # push to tracked remote branch\par
+\cf2   git push origin \cf3<branch>\cf4               \cf0 # push to a specific branch\par
+\cf2   git push --tags\cf4                      \cf0 # push all local tags to remote\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.6 \u183? Undo & Recover  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git restore \cf3<file>\cf4                  \cf0 # discard unstaged changes (restores from last commit)\par
+\cf2   git restore --staged \cf3<file>\cf4          \cf0 # unstage a file (keeps changes in working tree)\par
+\cf2   git stash\cf4                            \cf0 # shelve all uncommitted changes temporarily\par
+\cf2   git stash pop\cf4                        \cf0 # re-apply most recently stashed changes\par
+\cf2   git revert \cf3<commit>\cf4                  \cf0 # new commit that undoes a previous one (safe)\par}
+\par
+{\f2\fs18\cf8 WARNING: \cf1\f1 git restore\f2\cf8  permanently discards local changes -- no undo.\par
+Use \cf1\f1 git stash\f2\cf8  if unsure.\par}
+\par\line
+
+{\f0\fs24\b\cf1 3.7 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf2   git status\par
+  git add -A\cf4                           \cf0 # stage new + changed + deleted\par
+\cf2   git commit -m \cf3"describe your changes"\cf1\par
+  git pull --rebase\cf4                    \cf0 # sync remote changes first\par
+\cf2   git push\cf4                             \cf0 # send to remote\par}
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 4 -- Merge to Dev via PR\b0\par}
+{\f2\fs18\cf4 Flow: feature branch \u8594? push \u8594? open PR \u8594? review & approve \u8594? merge PR \u8594? sync local dev\par}
+{\f2\fs18\cf4 Legend:  [local] = terminal  |  [web UI] = GitHub or GitLab\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.1 \u183? Clean Up & Push Your Branch  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git status\cf4                           \cf0 # confirm no uncommitted changes\par
+\cf2   git push -u origin \cf3<your-branch>\cf4         \cf0 # push branch and set upstream tracking\par}
+\par
+{\f2\fs18\cf4 NOTE: \cf1\f1 -u\f2\cf4  is only needed on the first push. After that, just use \cf1\f1 git push\f2\cf4 .\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.2 \u183? Open a Pull Request  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   GitHub:  Repo \u8594? Pull Requests \u8594? New pull request\par
+           base: dev  |  compare: \cf3<your-branch>\cf7\par
+\par
+   GitLab:  Repo \u8594? Merge Requests \u8594? New merge request\par
+            source: \cf3<your-branch>\cf7  |  target: dev\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Clear PR title and description -- what changed, why, any testing notes.\par
+Assign reviewers and link related issues.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.3 \u183? Address Review Feedback  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git add -A && git commit -m \cf3"address review feedback"\cf1\par
+  git push\cf4                             \cf0 # PR refreshes automatically\par}
+\par
+{\f2\fs18\cf4 NOTE: Repeat commit + push as many times as needed.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.4 \u183? Resolve Conflicts (If Flagged in the PR)  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev && git pull --rebase origin dev\cf4  \cf0 # sync dev locally\par
+\cf2   git checkout \cf3<your-branch>\cf4                    \cf0 # switch back to your branch\par
+\cf2   git merge dev\cf4                                \cf0 # surface conflicts\par
+\cf2   nano \cf3<conflicting-file>\cf4                      \cf0 # resolve <<<, ===, >>> markers\par
+\cf2   git add -A && git commit && git push\cf4          \cf0 # stage, commit, push\par}
+\par
+{\f2\fs18\cf8 WARNING: Every conflict marker (<<<<<<<, =======, >>>>>>>) must be removed.\par
+Leaving one in will break the build.\par}
+\par
+{\f2\fs18\cf4 Conflict marker anatomy:\par}
+{\f1\fs18\cf4   <<<<<<< HEAD (dev)\par
+     code from dev\par
+   =======\par
+     code from your branch\par
+   >>>>>>> your-branch\par}
+{\f2\fs18\cf4 Delete markers, keep correct code, then \cf1\f1 git add\f2\cf4  the file.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.5 \u183? Merge the PR  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   Click "Merge pull request" (GitHub) or "Merge" (GitLab)\par
+   Confirm the merge\cf4\par}
+\par
+{\f2\fs18\cf4 Merge strategies:\par
+   Merge commit    -- keeps full branch history\par
+   Squash and merge -- condenses all commits into one on dev\par
+   Rebase and merge -- replays commits linearly onto dev\par}
+\par
+{\f2\fs18\cf5 TIP: Check your team\'92s convention. Most teams standardise on one strategy.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.6 \u183? Sync Local Dev After the Merge  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev\cf4                     \cf0 # switch to local dev\par
+\cf2   git pull origin dev\cf4                  \cf0 # pull the merged state from remote\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.7 \u183? Clean Up  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git branch -d \cf3<your-branch>\cf4           \cf0 # delete local branch\par
+\cf2   git push origin --delete \cf3<your-branch>\cf4  \cf0 # delete remote branch\par
+\cf2   git fetch --prune\cf4                    \cf0 # remove stale remote-tracking refs\par}
+\par
+{\f2\fs18\cf4 NOTE: Use \cf1\f1 -D\f2\cf4  instead of \cf1\f1 -d\f2\cf4  to force-delete an unmerged branch.\par}
+\par\line
+
+{\f0\fs24\b\cf1 4.8 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf4   # --- local: push your branch ---\par
+\cf2   git push -u origin \cf3<your-branch>\cf4\par
+\cf4   # --- web UI: open PR, assign reviewers ---\par
+   # --- local: if conflicts are flagged ---\par
+\cf2   git checkout dev && git pull --rebase origin dev\par
+  git checkout \cf3<your-branch>\cf1\par
+  git merge dev\cf4                            \cf0 # resolve conflicts, then:\par
+\cf2   git add -A && git commit && git push\cf4\par
+   # --- web UI: merge the PR once approved ---\par
+   # --- local: sync and clean up ---\par
+\cf2   git checkout dev && git pull origin dev\par
+  git branch -d \cf3<your-branch>\cf1\par
+  git fetch --prune\par}
+
+\par\page
+
+{\f0\fs30\b\cf1 Part 5 -- Promote Dev to Main\b0\par}
+{\f2\fs18\cf4 Flow: dev (tested) \u8594? release PR \u8594? review & approve \u8594? merge to main \u8594? tag \u8594? sync dev\par}
+{\f2\fs18\cf4 Legend:  [local] = terminal  |  [web UI] = GitHub or GitLab  |  [DANGER] = production impact\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.1 \u183? Pre-Flight Checks  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev && git pull origin dev\cf4       \cf0 # ensure dev is up to date\par
+\cf2   git log origin/main..dev --oneline\cf4           \cf0 # review commits not yet in main\par
+\cf2   git diff origin/main..dev --stat\cf4              \cf0 # summary of changed files\par
+\cf2   git status\cf4                                   \cf0 # confirm dev is clean\par}
+\par
+{\f2\fs18\cf8 WARNING: Never promote a dev branch with failing tests, uncommitted changes, or unreviewed commits.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.2 \u183? Open a Release PR: dev \u8594? main  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   GitHub:  Pull Requests \u8594? New pull request\par
+           base: main  |  compare: dev\par
+\par
+   GitLab:  Merge Requests \u8594? New merge request\par
+            source: dev  |  target: main\cf4\par}
+\par
+{\f2\fs18\cf5 TIP: Title the PR clearly, e.g. "Release v1.2.0". Include a changelog.\par
+Assign senior reviewers -- this is going to production.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.3 \u183? Review, Approve & Merge the PR  [web UI]\b0\par}
+\par
+{\f2\fs20\cf7   - Reviewers approve the PR (at least one senior approval required)\par
+   - All CI checks pass (tests, linting, security scans)\par
+   - Click "Merge pull request" \u8594? "Create a merge commit"\cf4\par}
+\par
+{\f2\fs18\cf8 WARNING: Do not use squash or rebase merge for dev \u8594? main.\par
+A merge commit clearly marks the release point in history.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.4 \u183? Tag the Release  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout main && git pull origin main\cf4     \cf0 # sync the merged state\par
+\cf2   git tag -a \cf3v1.2.0\cf2  -m \cf3"Release v1.2.0"\cf4           \cf0 # annotated tag at HEAD of main\par
+\cf2   git push origin \cf3v1.2.0\cf4                         \cf0 # push tag to remote\par
+\cf2   git tag -l\cf4                                     \cf0 # list all tags to verify\par}
+\par
+{\f2\fs18\cf5 TIP: Semantic versioning -- vMAJOR.MINOR.PATCH\par
+  MAJOR (v2.0.0) -- breaking changes\par
+  MINOR (v1.2.0) -- new features, backwards compatible\par
+  PATCH (v1.2.1) -- bug fixes, backwards compatible\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.5 \u183? Sync Dev With Main Post-Merge  [local]\b0\par}
+\par
+{\f1\fs20\cf2   git checkout dev\cf4                             \cf0 # switch back to dev\par
+\cf2   git merge main\cf4                               \cf0 # bring merge commit into dev\par
+\cf2   git push origin dev\cf4                          \cf0 # push updated dev\par}
+\par
+{\f2\fs18\cf4 NOTE: Skipping this causes dev to diverge from main over time.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.6 \u183? Emergency Rollback  [DANGER]\b0\par}
+\par
+{\f2\fs18\cf9 SAFE (preferred):\par}
+{\f1\fs20\cf2   git revert HEAD && git push origin main\cf4       \cf0 # new revert commit, history preserved\par}
+\par
+{\f2\fs18\cf9 DESTRUCTIVE (last resort only):\par}
+{\f1\fs20\cf2   git checkout main && git reset --hard \cf3<prev-tag>\cf4  \cf0 # hard reset to previous tag\par
+\cf2   git push --force-with-lease origin main\cf4        \cf0 # force-push if protections allow\par}
+\par
+{\f2\fs18\cf9 DANGER: Force-pushing to main rewrites shared history.\par
+Always prefer git revert.\par}
+\par\line
+
+{\f0\fs24\b\cf1 5.7 \u183? Quick Reference\b0\par}
+\par
+{\f1\fs20\cf4   # --- local: pre-flight ---\par
+\cf2   git checkout dev && git pull origin dev\par
+  git log origin/main..dev --oneline\cf4           \cf0 # review commits shipping to prod\par
+\cf4   # --- web UI: open PR dev \u8594? main, approvals, CI green, merge ---\par
+   # --- local: tag the release ---\par
+\cf2   git checkout main && git pull origin main\par
+  git tag -a \cf3v1.2.0\cf2  -m \cf3"Release v1.2.0"\cf1\par
+  git push origin \cf3v1.2.0\cf4\par
+   # --- local: sync dev with main ---\par
+\cf2   git checkout dev\par
+  git merge main && git push origin dev\par}
+\par
+{\f2\fs16\cf4 Generated for Linux. For the latest Git docs visit https://git-scm.com/doc\par}
+\par
+}
