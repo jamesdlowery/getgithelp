@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & GitHub: A Complete Field Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap');
+
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --surface2:  #1c2128;
+    --border:    #30363d;
+    --text:      #e6edf3;
+    --muted:     #8b949e;
+    --accent:    #f78166;
+    --accent2:   #79c0ff;
+    --accent3:   #7ee787;
+    --accent4:   #d2a8ff;
+    --warn:      #e3b341;
+    --danger:    #f85149;
+    --code-bg:   #161b22;
+    --link:      #58a6ff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  nav#toc {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 24px 0;
+    z-index: 100;
+  }
+
+  nav#toc .toc-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  nav#toc .toc-logo span.git { color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  nav#toc .toc-logo span.gh  { color: var(--accent2); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  nav#toc .toc-logo p { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  nav#toc ul { list-style: none; padding: 0 8px; }
+  nav#toc ul li { margin: 2px 0; }
+  nav#toc ul li a {
+    display: block;
+    padding: 5px 12px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12.5px;
+    border-radius: 4px;
+    transition: color .15s, background .15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  nav#toc ul li a:hover { color: var(--text); background: var(--surface2); }
+  nav#toc ul li.h3 a { padding-left: 24px; font-size: 11.5px; }
+
+  /* ── Main content ── */
+  main {
+    margin-left: 260px;
+    flex: 1;
+    max-width: 960px;
+    padding: 48px 56px 80px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2236 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 44px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(247,129,102,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .hero h1 .git-word { color: var(--accent); }
+  .hero h1 .gh-word  { color: var(--accent2); }
+  .hero .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 620px;
+  }
+  .hero .badges {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+  .badge.green { border-color: #238636; color: var(--accent3); }
+  .badge.blue  { border-color: #1f6feb; color: var(--accent2); }
+  .badge.orange{ border-color: #9e6a03; color: var(--warn); }
+
+  /* ── Typography ── */
+  h1 { display: none; } /* replaced by hero */
+
+  h2 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 48px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2 .section-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 28px 0 10px;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warn);
+    margin: 20px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  p { margin: 10px 0; color: var(--text); }
+
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  strong { color: var(--text); font-weight: 600; }
+  em { font-style: italic; color: var(--muted); }
+
+  /* ── Blockquote ── */
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    background: var(--surface2);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  blockquote p { color: var(--muted); margin: 4px 0; }
+  blockquote strong { color: var(--accent2); }
+
+  /* ── Code ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--accent3);
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 14px 0;
+    position: relative;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12.5px;
+    color: #e6edf3;
+    line-height: 1.65;
+  }
+
+  /* Language label on code blocks */
+  pre[class*="language-"]::before,
+  pre.codehilite::before {
+    content: 'bash';
+    position: absolute;
+    top: 8px; right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--muted);
+    text-align: left;
+    padding: 9px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  td code { font-size: 11.5px; }
+
+  /* ── Lists ── */
+  ul, ol {
+    padding-left: 24px;
+    margin: 8px 0;
+  }
+  li { margin: 4px 0; }
+  li code { font-size: 12px; }
+
+  /* ── HR ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Print ── */
+  @media print {
+    nav#toc { display: none; }
+    main { margin-left: 0; padding: 20px; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    nav#toc { display: none; }
+    main { margin-left: 0; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="toc">
+  <div class="toc-logo">
+    <div><span class="git">git</span> &amp; <span class="gh">gh</span></div>
+    <p>Complete Field Guide</p>
+  </div>
+  <ul>
+    <li><a href="#prerequisites">1. Prerequisites &amp; Setup</a></li>
+    <li class="h3"><a href="#install">1.1 Install git &amp; gh</a></li>
+    <li class="h3"><a href="#configure">1.2 Configure git Identity</a></li>
+    <li class="h3"><a href="#authenticate">1.3 Authenticate gh</a></li>
+    <li><a href="#concepts">2. Core Concepts</a></li>
+    <li><a href="#create-repo">3. Creating a Repository</a></li>
+    <li><a href="#branching">4. Branching Strategy</a></li>
+    <li><a href="#first-commit">5. First Commit</a></li>
+    <li><a href="#daily-workflow">6. Daily Workflow</a></li>
+    <li><a href="#issues">7. Issues</a></li>
+    <li><a href="#pull-requests">8. Pull Requests</a></li>
+    <li><a href="#promotions">9. Promotions dev→test→prod</a></li>
+    <li><a href="#reverting">10. Reverting</a></li>
+    <li><a href="#actions">11. GitHub Actions</a></li>
+    <li class="h3"><a href="#test-workflow">11.2 Test on Push</a></li>
+    <li class="h3"><a href="#obfuscation">11.3 PyArmor Obfuscation</a></li>
+    <li class="h3"><a href="#trial">11.4 Trial / Nag Screen</a></li>
+    <li class="h3"><a href="#keygen">11.5 License Keys</a></li>
+    <li class="h3"><a href="#release-workflow">11.6 Release Workflow</a></li>
+    <li class="h3"><a href="#secrets">11.7 GitHub Secrets</a></li>
+    <li><a href="#cheatsheet">12. Quick Reference</a></li>
+    <li><a href="#glossary">13. Glossary</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="hero">
+    <h1><span class="git-word">Git</span> &amp; <span class="gh-word">GitHub</span>: A Complete Field Guide<br>for Linux Developers</h1>
+    <p class="subtitle">Everything you need to manage Python projects on GitHub entirely from the Bash terminal — from first commit to automated release packaging with trial and registration.</p>
+    <div class="badges">
+      <span class="badge green">✓ Debian / Ubuntu Linux</span>
+      <span class="badge blue">✓ Bash CLI</span>
+      <span class="badge orange">✓ git + gh CLI</span>
+      <span class="badge green">✓ GitHub Actions</span>
+      <span class="badge blue">✓ Python Packaging</span>
+    </div>
+  </div>
+
+<h1 id="git-github-a-complete-field-guide-for-linux-developers">Git &amp; GitHub: A Complete Field Guide for Linux Developers</h1>
+<blockquote>
+<p><strong>Audience:</strong> Developers working on Debian/Ubuntu Linux using Bash who want to manage projects on GitHub entirely from the terminal using <code>git</code> and the <code>gh</code> CLI.<br />
+<strong>Scope:</strong> Repository creation → branching strategy → daily workflow → issue and PR management → promotions → reversions → GitHub Actions automation for Python software packaging (with trial/nag-screen and registration).</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-prerequisites--first-time-setup">Prerequisites &amp; First-Time Setup</a></li>
+<li><a href="#2-core-concepts-you-must-know">Core Concepts You Must Know</a></li>
+<li><a href="#3-creating-a-new-repository">Creating a New Repository</a></li>
+<li><a href="#4-branching-strategy-dev--test--prod">Branching Strategy: dev → test → prod</a></li>
+<li><a href="#5-initializing-the-repo--first-commit">Initializing the Repo &amp; First Commit</a></li>
+<li><a href="#6-daily-development-workflow">Daily Development Workflow</a></li>
+<li><a href="#7-issues-tracking-work">Issues: Tracking Work</a></li>
+<li><a href="#8-pull-requests-promoting-changes">Pull Requests: Promoting Changes</a></li>
+<li><a href="#9-promoting-dev--test--prod">Promoting dev → test → prod</a></li>
+<li><a href="#10-reverting-things">Reverting Things</a></li>
+<li><a href="#11-github-actions-automating-python-software-packaging">GitHub Actions: Automating Python Software Packaging</a></li>
+<li><a href="#12-quick-reference-cheat-sheet">Quick Reference Cheat Sheet</a></li>
+<li><a href="#13-glossary">Glossary</a></li>
+</ol>
+<hr />
+<h2 id="1-prerequisites-first-time-setup">1. Prerequisites &amp; First-Time Setup</h2>
+<h3 id="11-install-git-and-the-gh-cli">1.1 Install <code>git</code> and the <code>gh</code> CLI</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Update package list</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+
+<span class="c1"># Install git</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>git
+
+<span class="c1"># Install GitHub CLI (gh) — add the official repo first</span>
+<span class="nb">type</span><span class="w"> </span>-p<span class="w"> </span>curl<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>curl<span class="w"> </span>-y
+curl<span class="w"> </span>-fsSL<span class="w"> </span>https://cli.github.com/packages/githubcli-archive-keyring.gpg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>dd<span class="w"> </span><span class="nv">of</span><span class="o">=</span>/usr/share/keyrings/githubcli-archive-keyring.gpg
+sudo<span class="w"> </span>chmod<span class="w"> </span>go+r<span class="w"> </span>/usr/share/keyrings/githubcli-archive-keyring.gpg
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [arch=</span><span class="k">$(</span>dpkg<span class="w"> </span>--print-architecture<span class="k">)</span><span class="s2"> signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] \</span>
+<span class="s2">  https://cli.github.com/packages stable main&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/github-cli.list<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>gh
+
+<span class="c1"># Verify</span>
+git<span class="w"> </span>--version
+gh<span class="w"> </span>--version
+</code></pre></div>
+
+<h3 id="12-configure-git-identity-run-once">1.2 Configure <code>git</code> Identity (run once)</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.name<span class="w">  </span><span class="s2">&quot;Your Name&quot;</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.email<span class="w"> </span><span class="s2">&quot;you@example.com&quot;</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.editor<span class="w"> </span><span class="s2">&quot;nano&quot;</span><span class="w">          </span><span class="c1"># or vim, code, etc.</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>init.defaultBranch<span class="w"> </span>main<span class="w">     </span><span class="c1"># modern default</span>
+</code></pre></div>
+
+<h3 id="13-authenticate-gh-to-github">1.3 Authenticate <code>gh</code> to GitHub</h3>
+<p><strong>Interactive (browser-based) — easiest:</strong></p>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>auth<span class="w"> </span>login
+<span class="c1"># Choose: GitHub.com → HTTPS → Login with a web browser</span>
+<span class="c1"># Follow the one-time code prompt</span>
+</code></pre></div>
+
+<p><strong>Token-based (for servers/scripts):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate a token at: https://github.com/settings/tokens</span>
+<span class="c1"># Give it: repo, workflow, read:org scopes</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">GH_TOKEN</span><span class="o">=</span><span class="s2">&quot;ghp_yourTokenHere&quot;</span>
+
+<span class="c1"># To persist across sessions:</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export GH_TOKEN=&quot;ghp_yourTokenHere&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+<span class="nb">source</span><span class="w"> </span>~/.bashrc
+</code></pre></div>
+
+<blockquote>
+<p><strong><code>git</code> vs <code>gh</code> — what's the difference?</strong><br />
+<code>git</code> is the core version-control tool that works entirely locally (commits, branches, merges).<br />
+<code>gh</code> is the GitHub CLI — it talks to the GitHub API to manage repos, PRs, issues, and Actions from your terminal. You need both.</p>
+</blockquote>
+<hr />
+<h2 id="2-core-concepts-you-must-know">2. Core Concepts You Must Know</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Repository (repo)</strong></td>
+<td>A folder tracked by git. Contains all your code and its full history.</td>
+</tr>
+<tr>
+<td><strong>Commit</strong></td>
+<td>A saved snapshot of your changes. Think of it as a named save point.</td>
+</tr>
+<tr>
+<td><strong>Branch</strong></td>
+<td>A parallel version of the code. Changes on one branch don't affect others until merged.</td>
+</tr>
+<tr>
+<td><strong>Remote</strong></td>
+<td>A copy of the repo hosted somewhere else (GitHub). <code>origin</code> is the conventional name for it.</td>
+</tr>
+<tr>
+<td><strong>Push</strong></td>
+<td>Send your local commits up to the remote (GitHub).</td>
+</tr>
+<tr>
+<td><strong>Pull</strong></td>
+<td>Download remote commits to your local machine.</td>
+</tr>
+<tr>
+<td><strong>Fetch</strong></td>
+<td>Download remote metadata without merging.</td>
+</tr>
+<tr>
+<td><strong>Merge</strong></td>
+<td>Combine the history of two branches into one.</td>
+</tr>
+<tr>
+<td><strong>Pull Request (PR)</strong></td>
+<td>A GitHub feature to review and merge one branch into another. Preferred over direct merging.</td>
+</tr>
+<tr>
+<td><strong>Issue</strong></td>
+<td>A GitHub task/bug/feature request. Can be linked to commits and PRs.</td>
+</tr>
+<tr>
+<td><strong>HEAD</strong></td>
+<td>A pointer to your current position in the commit history.</td>
+</tr>
+<tr>
+<td><strong>Staging Area</strong></td>
+<td>A holding zone where you queue up changes before committing them (<code>git add</code>).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-creating-a-new-repository">3. Creating a New Repository</h2>
+<h3 id="option-a-create-on-github-first-then-clone-recommended">Option A — Create on GitHub first, then clone (recommended)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a private repo on GitHub and clone it locally in one command</span>
+gh<span class="w"> </span>repo<span class="w"> </span>create<span class="w"> </span>my-project<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--private<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--description<span class="w"> </span><span class="s2">&quot;My awesome project&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--clone
+
+<span class="nb">cd</span><span class="w"> </span>my-project
+</code></pre></div>
+
+<p><strong>Common flags for <code>gh repo create</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--public</code></td>
+<td>Make the repo publicly visible</td>
+</tr>
+<tr>
+<td><code>--private</code></td>
+<td>Make the repo private (default for new work)</td>
+</tr>
+<tr>
+<td><code>--clone</code></td>
+<td>Clone it to the current directory immediately</td>
+</tr>
+<tr>
+<td><code>--add-readme</code></td>
+<td>Add a starter README.md</td>
+</tr>
+<tr>
+<td><code>--gitignore Python</code></td>
+<td>Add a Python-specific .gitignore</td>
+</tr>
+<tr>
+<td><code>--license MIT</code></td>
+<td>Add an MIT license file</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Full example with extras</span>
+gh<span class="w"> </span>repo<span class="w"> </span>create<span class="w"> </span>my-python-app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--private<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--description<span class="w"> </span><span class="s2">&quot;Python app with trial/registration&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--gitignore<span class="w"> </span>Python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--license<span class="w"> </span>MIT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--clone
+
+<span class="nb">cd</span><span class="w"> </span>my-python-app
+</code></pre></div>
+
+<h3 id="option-b-initialize-locally-push-to-github">Option B — Initialize locally, push to GitHub</h3>
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>my-project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>my-project
+git<span class="w"> </span>init
+<span class="c1"># ... add files, make first commit (see Section 5) ...</span>
+gh<span class="w"> </span>repo<span class="w"> </span>create<span class="w"> </span>my-project<span class="w"> </span>--private<span class="w"> </span>--source<span class="o">=</span>.<span class="w"> </span>--push
+</code></pre></div>
+
+<h3 id="useful-repo-management-commands">Useful repo management commands</h3>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>repo<span class="w"> </span>list<span class="w">                        </span><span class="c1"># List your repos</span>
+gh<span class="w"> </span>repo<span class="w"> </span>view<span class="w">                        </span><span class="c1"># View current repo info</span>
+gh<span class="w"> </span>repo<span class="w"> </span>view<span class="w"> </span>--web<span class="w">                  </span><span class="c1"># Open repo in browser</span>
+gh<span class="w"> </span>repo<span class="w"> </span>delete<span class="w"> </span>my-project<span class="w">           </span><span class="c1"># Delete a repo (irreversible!)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="4-branching-strategy-dev-test-prod">4. Branching Strategy: dev → test → prod</h2>
+<p>This guide uses a <strong>three-branch promotion model</strong>:</p>
+<div class="codehilite"><pre><span></span><code>prod   ← stable, released code. Never commit here directly.
+  ↑
+test   ← integration/QA branch. Code that passed dev review.
+  ↑
+dev    ← active development. All feature work starts here.
+</code></pre></div>
+
+<h3 id="41-create-the-branches">4.1 Create the branches</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># After cloning or initializing (you&#39;ll be on &#39;main&#39; or &#39;master&#39;)</span>
+<span class="c1"># Rename the default branch to &#39;prod&#39; (the stable/release branch)</span>
+git<span class="w"> </span>branch<span class="w"> </span>-m<span class="w"> </span>main<span class="w"> </span>prod
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>prod
+
+<span class="c1"># Set prod as the default branch on GitHub</span>
+gh<span class="w"> </span>repo<span class="w"> </span>edit<span class="w"> </span>--default-branch<span class="w"> </span>prod
+
+<span class="c1"># Create &#39;test&#39; from prod</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span><span class="nb">test</span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># Create &#39;dev&#39; from test</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>dev
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>dev
+
+<span class="c1"># Protect prod and test branches from direct pushes</span>
+gh<span class="w"> </span>api<span class="w"> </span>repos/<span class="o">{</span>owner<span class="o">}</span>/<span class="o">{</span>repo<span class="o">}</span>/branches/prod/protection<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--method<span class="w"> </span>PUT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span><span class="nv">required_pull_request_reviews</span><span class="o">=</span><span class="s1">&#39;{&quot;required_approving_review_count&quot;:1}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--field<span class="w"> </span><span class="nv">enforce_admins</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="c1"># Simpler protection via web UI: Settings → Branches → Add rule</span>
+</code></pre></div>
+
+<blockquote>
+<p><strong>Branch protection</strong> prevents anyone (including you) from pushing directly to <code>prod</code> or <code>test</code>. All changes must come through a reviewed Pull Request. This is a best practice even for solo projects.</p>
+</blockquote>
+<h3 id="42-daily-branch-rule">4.2 Daily branch rule</h3>
+<div class="codehilite"><pre><span></span><code>All new work → branch off dev → PR back into dev → PR into test → PR into prod
+</code></pre></div>
+
+<p>Never commit directly to <code>test</code> or <code>prod</code>.</p>
+<hr />
+<h2 id="5-initializing-the-repo-first-commit">5. Initializing the Repo &amp; First Commit</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>my-project<span class="w">    </span><span class="c1"># Must be inside the repo directory</span>
+
+<span class="c1"># Check current status (always a safe command — it changes nothing)</span>
+git<span class="w"> </span>status
+
+<span class="c1"># Create a .gitignore to exclude files git should never track</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>.gitignore<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<span class="s">__pycache__/</span>
+<span class="s">*.py[cod]</span>
+<span class="s">*.egg-info/</span>
+<span class="s">dist/</span>
+<span class="s">build/</span>
+<span class="s">.env</span>
+<span class="s">*.env</span>
+<span class="s">venv/</span>
+<span class="s">.venv/</span>
+<span class="s">*.log</span>
+<span class="s">*.sqlite3</span>
+<span class="s">.DS_Store</span>
+<span class="s">EOF</span>
+
+<span class="c1"># Create a starter README if you don&#39;t have one</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;# My Project&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>README.md
+
+<span class="c1"># Stage all new files (add them to the staging area)</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+
+<span class="c1"># Verify what&#39;s staged</span>
+git<span class="w"> </span>status
+
+<span class="c1"># Make the first commit</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Initial commit: add README and .gitignore&quot;</span>
+
+<span class="c1"># Push to the remote (GitHub) — sets upstream tracking</span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>dev
+</code></pre></div>
+
+<h3 id="understanding-git-add">Understanding <code>git add</code></h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>.<span class="w">                  </span><span class="c1"># Stage ALL changed/new files in current directory</span>
+git<span class="w"> </span>add<span class="w"> </span>filename.py<span class="w">        </span><span class="c1"># Stage a single file</span>
+git<span class="w"> </span>add<span class="w"> </span>src/<span class="w">               </span><span class="c1"># Stage an entire directory</span>
+git<span class="w"> </span>add<span class="w"> </span>-p<span class="w">                 </span><span class="c1"># Interactive: review each change chunk before staging</span>
+git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>file<span class="w">  </span><span class="c1"># UN-stage a file (does not delete the file)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="6-daily-development-workflow">6. Daily Development Workflow</h2>
+<p>This is the loop you'll repeat every working session:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Switch to dev and pull latest changes</span>
+git<span class="w"> </span>checkout<span class="w"> </span>dev
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>dev
+
+<span class="c1"># 2. (Optional but recommended) Create a feature branch for your work</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/my-new-thing
+
+<span class="c1"># 3. Write code... edit files...</span>
+
+<span class="c1"># 4. Check what changed</span>
+git<span class="w"> </span>status
+git<span class="w"> </span>diff<span class="w">                   </span><span class="c1"># Shows unstaged changes line by line</span>
+git<span class="w"> </span>diff<span class="w"> </span>--staged<span class="w">          </span><span class="c1"># Shows staged changes</span>
+
+<span class="c1"># 5. Stage your changes</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+
+<span class="c1"># 6. Commit with a meaningful message</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: add login validation to user module&quot;</span>
+
+<span class="c1"># 7. Push your branch to GitHub</span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>feature/my-new-thing
+
+<span class="c1"># 8. Open a PR to merge feature branch → dev</span>
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--base<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--head<span class="w"> </span>feature/my-new-thing<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;Add login validation&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;Closes #12. Adds input sanitization to the login form.&quot;</span>
+</code></pre></div>
+
+<h3 id="commit-message-conventions-recommended">Commit message conventions (recommended)</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">feat</span><span class="o">:</span><span class="w">     </span><span class="n">A</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">feature</span>
+<span class="n">fix</span><span class="o">:</span><span class="w">      </span><span class="n">A</span><span class="w"> </span><span class="n">bug</span><span class="w"> </span><span class="n">fix</span>
+<span class="n">docs</span><span class="o">:</span><span class="w">     </span><span class="n">Documentation</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">changes</span>
+<span class="n">style</span><span class="o">:</span><span class="w">    </span><span class="n">Formatting</span><span class="o">,</span><span class="w"> </span><span class="n">whitespace</span><span class="w"> </span><span class="o">(</span><span class="n">no</span><span class="w"> </span><span class="n">logic</span><span class="w"> </span><span class="n">change</span><span class="o">)</span>
+<span class="n">refactor</span><span class="o">:</span><span class="w"> </span><span class="n">Code</span><span class="w"> </span><span class="n">restructuring</span><span class="w"> </span><span class="o">(</span><span class="n">no</span><span class="w"> </span><span class="n">feature</span><span class="o">/</span><span class="n">fix</span><span class="o">)</span>
+<span class="n">test</span><span class="o">:</span><span class="w">     </span><span class="n">Adding</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">fixing</span><span class="w"> </span><span class="n">tests</span>
+<span class="n">chore</span><span class="o">:</span><span class="w">    </span><span class="n">Build</span><span class="w"> </span><span class="n">process</span><span class="o">,</span><span class="w"> </span><span class="n">dependency</span><span class="w"> </span><span class="n">updates</span>
+</code></pre></div>
+
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">feat</span><span class="o">:</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">registration</span><span class="w"> </span><span class="n">endpoint</span>
+<span class="n">fix</span><span class="o">:</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="n">pointer</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="n">processor</span>
+<span class="n">docs</span><span class="o">:</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="n">README</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">installation</span><span class="w"> </span><span class="n">steps</span>
+<span class="n">chore</span><span class="o">:</span><span class="w"> </span><span class="n">upgrade</span><span class="w"> </span><span class="n">requests</span><span class="w"> </span><span class="n">library</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mf">2.31</span><span class="o">.</span><span class="mi">0</span>
+</code></pre></div>
+
+<h3 id="keeping-your-branch-up-to-date-with-dev">Keeping your branch up to date with dev</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># While on your feature branch:</span>
+git<span class="w"> </span>fetch<span class="w"> </span>origin
+git<span class="w"> </span>rebase<span class="w"> </span>origin/dev<span class="w">      </span><span class="c1"># Preferred: keeps history linear</span>
+<span class="c1"># OR</span>
+git<span class="w"> </span>merge<span class="w"> </span>origin/dev<span class="w">       </span><span class="c1"># Alternative: creates a merge commit</span>
+</code></pre></div>
+
+<hr />
+<h2 id="7-issues-tracking-work">7. Issues: Tracking Work</h2>
+<p>Issues are GitHub's built-in task tracker. Link them to commits and PRs for a full audit trail.</p>
+<h3 id="create-an-issue">Create an issue</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Interactive</span>
+gh<span class="w"> </span>issue<span class="w"> </span>create
+
+<span class="c1"># One-liner</span>
+gh<span class="w"> </span>issue<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;Bug: login fails with special characters&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;Steps to reproduce: enter &#39;@&#39; in password field. Expected: login succeeds.&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--label<span class="w"> </span><span class="s2">&quot;bug&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--assignee<span class="w"> </span><span class="s2">&quot;@me&quot;</span>
+</code></pre></div>
+
+<h3 id="manage-issues">Manage issues</h3>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>issue<span class="w"> </span>list<span class="w">                        </span><span class="c1"># List open issues</span>
+gh<span class="w"> </span>issue<span class="w"> </span>list<span class="w"> </span>--state<span class="w"> </span>closed<span class="w">         </span><span class="c1"># List closed issues</span>
+gh<span class="w"> </span>issue<span class="w"> </span>list<span class="w"> </span>--label<span class="w"> </span><span class="s2">&quot;bug&quot;</span><span class="w">          </span><span class="c1"># Filter by label</span>
+gh<span class="w"> </span>issue<span class="w"> </span>view<span class="w"> </span><span class="m">12</span><span class="w">                     </span><span class="c1"># View issue #12</span>
+gh<span class="w"> </span>issue<span class="w"> </span>close<span class="w"> </span><span class="m">12</span><span class="w">                    </span><span class="c1"># Close issue #12</span>
+gh<span class="w"> </span>issue<span class="w"> </span>reopen<span class="w"> </span><span class="m">12</span><span class="w">                   </span><span class="c1"># Reopen issue #12</span>
+gh<span class="w"> </span>issue<span class="w"> </span>comment<span class="w"> </span><span class="m">12</span><span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;Fixed in PR #15&quot;</span>
+</code></pre></div>
+
+<h3 id="link-issues-to-commits-and-prs">Link issues to commits and PRs</h3>
+<p>In commit messages or PR bodies, use these magic keywords — GitHub automatically closes the issue when the PR merges:</p>
+<div class="codehilite"><pre><span></span><code>Closes #12
+Fixes #12
+Resolves #12
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: handle special chars in password field — Closes #12&quot;</span>
+</code></pre></div>
+
+<h3 id="create-and-manage-labels">Create and manage labels</h3>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>label<span class="w"> </span>list
+gh<span class="w"> </span>label<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;needs-testing&quot;</span><span class="w"> </span>--color<span class="w"> </span><span class="s2">&quot;#e11d48&quot;</span><span class="w"> </span>--description<span class="w"> </span><span class="s2">&quot;Requires QA&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="8-pull-requests-promoting-changes">8. Pull Requests: Promoting Changes</h2>
+<p>A Pull Request (PR) is a formal request to merge one branch into another. It's the right way to move code between branches, even when working solo.</p>
+<h3 id="create-a-pr">Create a PR</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Push branch first</span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>feature/my-thing
+
+<span class="c1"># Create PR</span>
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--base<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--head<span class="w"> </span>feature/my-thing<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;Add thing&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;Description of changes. Closes #5.&quot;</span>
+
+<span class="c1"># Create as a draft (not ready for review)</span>
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span>--draft<span class="w"> </span>--base<span class="w"> </span>dev<span class="w"> </span>--head<span class="w"> </span>feature/my-thing<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;WIP: thing&quot;</span>
+</code></pre></div>
+
+<h3 id="review-and-manage-prs">Review and manage PRs</h3>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>pr<span class="w"> </span>list<span class="w">                           </span><span class="c1"># List open PRs</span>
+gh<span class="w"> </span>pr<span class="w"> </span>view<span class="w"> </span><span class="m">7</span><span class="w">                         </span><span class="c1"># View PR #7</span>
+gh<span class="w"> </span>pr<span class="w"> </span>view<span class="w"> </span><span class="m">7</span><span class="w"> </span>--web<span class="w">                   </span><span class="c1"># Open PR in browser</span>
+gh<span class="w"> </span>pr<span class="w"> </span>diff<span class="w"> </span><span class="m">7</span><span class="w">                         </span><span class="c1"># Show the diff for PR #7</span>
+gh<span class="w"> </span>pr<span class="w"> </span>review<span class="w"> </span><span class="m">7</span><span class="w"> </span>--approve<span class="w">             </span><span class="c1"># Approve PR #7</span>
+gh<span class="w"> </span>pr<span class="w"> </span>review<span class="w"> </span><span class="m">7</span><span class="w"> </span>--request-changes<span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;Please add tests&quot;</span>
+gh<span class="w"> </span>pr<span class="w"> </span>comment<span class="w"> </span><span class="m">7</span><span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;LGTM!&quot;</span>
+</code></pre></div>
+
+<h3 id="merge-a-pr">Merge a PR</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Merge (creates merge commit)</span>
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span><span class="m">7</span><span class="w"> </span>--merge
+
+<span class="c1"># Squash and merge (combines all commits into one — cleaner history)</span>
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span><span class="m">7</span><span class="w"> </span>--squash
+
+<span class="c1"># Rebase and merge (linear history, no merge commit)</span>
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span><span class="m">7</span><span class="w"> </span>--rebase
+
+<span class="c1"># Delete the branch after merging (recommended)</span>
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span><span class="m">7</span><span class="w"> </span>--squash<span class="w"> </span>--delete-branch
+</code></pre></div>
+
+<blockquote>
+<p><strong>Which merge strategy to use?</strong><br />
+- <strong>Squash</strong> — best for feature branches with many "WIP" commits. Keeps the target branch history clean.<br />
+- <strong>Merge commit</strong> — preserves full feature branch history. Good when individual commits matter.<br />
+- <strong>Rebase</strong> — cleanest linear history. Requires confidence with git rebase.</p>
+</blockquote>
+<hr />
+<h2 id="9-promoting-dev-test-prod">9. Promoting dev → test → prod</h2>
+<p>Promotion is just a PR from one environment branch to the next. Never bypass the PR process.</p>
+<h3 id="promote-dev-test">Promote dev → test</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Ensure dev is up to date</span>
+git<span class="w"> </span>checkout<span class="w"> </span>dev
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>dev
+
+<span class="c1"># Create the promotion PR</span>
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--base<span class="w"> </span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--head<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;Promote dev → test (</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">)&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;## Changes included</span>
+<span class="s2">- feat: login validation (#12)</span>
+<span class="s2">- fix: null pointer in payment (#14)</span>
+
+<span class="s2">## Testing checklist</span>
+<span class="s2">- [ ] Smoke test login flow</span>
+<span class="s2">- [ ] Verify payment processing&quot;</span>
+
+<span class="c1"># After review/approval, merge</span>
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span>--squash<span class="w"> </span>--delete-branch<span class="o">=</span><span class="nb">false</span><span class="w">   </span><span class="c1"># Don&#39;t delete dev!</span>
+</code></pre></div>
+
+<h3 id="promote-test-prod">Promote test → prod</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span><span class="nb">test</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span><span class="nb">test</span>
+
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--base<span class="w"> </span>prod<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--head<span class="w"> </span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;RELEASE: Promote test → prod (</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">)&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;## Release Notes</span>
+<span class="s2">- Adds login validation</span>
+<span class="s2">- Fixes payment null pointer</span>
+
+<span class="s2">## Sign-off</span>
+<span class="s2">- [ ] QA approved</span>
+<span class="s2">- [ ] Stakeholder approved&quot;</span>
+
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span>--merge<span class="w"> </span>--delete-branch<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>
+
+<h3 id="tag-a-release-after-promoting-to-prod">Tag a release after promoting to prod</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>prod
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>prod
+
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.2.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release v1.2.0: login validation + payment fix&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.2.0
+
+<span class="c1"># Or create a GitHub Release</span>
+gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v1.2.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;v1.2.0 — Login &amp; Payment fixes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--notes<span class="w"> </span><span class="s2">&quot;See CHANGELOG.md for details&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="10-reverting-things">10. Reverting Things</h2>
+<p>Git provides multiple ways to undo work. Choose based on what you need to undo and whether it's been pushed.</p>
+<h3 id="undo-overview">Undo overview</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Command</th>
+<th>Danger level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Undo unstaged changes to a file</td>
+<td><code>git restore filename</code></td>
+<td>Safe</td>
+</tr>
+<tr>
+<td>Undo staged changes (un-add)</td>
+<td><code>git restore --staged filename</code></td>
+<td>Safe</td>
+</tr>
+<tr>
+<td>Amend the last commit message</td>
+<td><code>git commit --amend -m "new message"</code></td>
+<td>⚠ Don't do if pushed</td>
+</tr>
+<tr>
+<td>Undo last commit, keep changes staged</td>
+<td><code>git reset --soft HEAD~1</code></td>
+<td>⚠ Don't do if pushed</td>
+</tr>
+<tr>
+<td>Undo last commit, keep changes unstaged</td>
+<td><code>git reset HEAD~1</code></td>
+<td>⚠ Don't do if pushed</td>
+</tr>
+<tr>
+<td>Undo last commit, discard changes</td>
+<td><code>git reset --hard HEAD~1</code></td>
+<td>⚠⚠ Destructive</td>
+</tr>
+<tr>
+<td>Safely undo a pushed commit</td>
+<td><code>git revert &lt;hash&gt;</code></td>
+<td>Safe (adds new commit)</td>
+</tr>
+<tr>
+<td>Revert a merged PR</td>
+<td><code>gh pr revert &lt;number&gt;</code></td>
+<td>Safe</td>
+</tr>
+</tbody>
+</table>
+<h3 id="safe-revert-of-a-pushed-commit-recommended">Safe revert of a pushed commit (recommended)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Find the commit hash</span>
+git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>-10
+
+<span class="c1"># Create a new commit that undoes the changes from that commit</span>
+git<span class="w"> </span>revert<span class="w"> </span>abc1234
+
+<span class="c1"># Push the revert commit</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>dev
+</code></pre></div>
+
+<h3 id="revert-a-merged-pr-on-github">Revert a merged PR on GitHub</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># This creates a new PR that undoes all changes from the original PR</span>
+gh<span class="w"> </span>pr<span class="w"> </span>revert<span class="w"> </span><span class="m">23</span>
+</code></pre></div>
+
+<h3 id="emergency-roll-back-prod-to-a-previous-release-tag">Emergency: roll back prod to a previous release tag</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># See existing tags</span>
+git<span class="w"> </span>tag<span class="w"> </span>--list
+
+<span class="c1"># Create a revert PR: reset prod to v1.1.0</span>
+git<span class="w"> </span>checkout<span class="w"> </span>prod
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>prod
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>hotfix/emergency-rollback
+
+<span class="c1"># Reset to the prior release tag</span>
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>v1.1.0
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>hotfix/emergency-rollback<span class="w"> </span>--force-with-lease
+
+<span class="c1"># Open emergency PR</span>
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--base<span class="w"> </span>prod<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--head<span class="w"> </span>hotfix/emergency-rollback<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;EMERGENCY: Roll back to v1.1.0&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--body<span class="w"> </span><span class="s2">&quot;Rolling back due to critical issue in v1.2.0&quot;</span>
+</code></pre></div>
+
+<h3 id="stashing-save-work-without-committing">Stashing — save work without committing</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>stash<span class="w">                   </span><span class="c1"># Stash current uncommitted changes</span>
+git<span class="w"> </span>stash<span class="w"> </span>list<span class="w">              </span><span class="c1"># See all stashes</span>
+git<span class="w"> </span>stash<span class="w"> </span>pop<span class="w">               </span><span class="c1"># Re-apply the most recent stash</span>
+git<span class="w"> </span>stash<span class="w"> </span>drop<span class="w">              </span><span class="c1"># Discard the most recent stash</span>
+git<span class="w"> </span>stash<span class="w"> </span>apply<span class="w"> </span>stash@<span class="o">{</span><span class="m">2</span><span class="o">}</span><span class="w">   </span><span class="c1"># Apply a specific stash</span>
+</code></pre></div>
+
+<hr />
+<h2 id="11-github-actions-automating-python-software-packaging">11. GitHub Actions: Automating Python Software Packaging</h2>
+<p>GitHub Actions lets you define automated workflows that run in response to events (push, PR, release, manual trigger). For a Python application, you can automate:</p>
+<ul>
+<li>Running tests on every push</li>
+<li>Packaging the app on release</li>
+<li>Applying <strong>code obfuscation</strong> (PyArmor) to protect your source</li>
+<li>Building a <strong>trial version</strong> with a nag screen</li>
+<li>Enabling <strong>registration</strong> to unlock the full version</li>
+<li>Distributing installers or bundles</li>
+</ul>
+<h3 id="111-workflow-file-basics">11.1 Workflow file basics</h3>
+<p>Workflows live in <code>.github/workflows/</code> as YAML files.</p>
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>.github/workflows
+</code></pre></div>
+
+<h3 id="112-run-tests-on-every-push-to-dev">11.2 Run tests on every push to dev</h3>
+<p>Create <code>.github/workflows/test.yml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run Tests</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dev</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">test</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">dev</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">test</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">prod</span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Check out code</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">python -m pip install --upgrade pip</span>
+<span class="w">          </span><span class="no">pip install -r requirements.txt</span>
+<span class="w">          </span><span class="no">pip install pytest</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pytest tests/ -v</span>
+</code></pre></div>
+
+<h3 id="113-code-obfuscation-with-pyarmor">11.3 Code obfuscation with PyArmor</h3>
+<p><a href="https://pyarmor.readthedocs.io/">PyArmor</a> encrypts and obfuscates Python bytecode so your source logic cannot be easily read or copied.</p>
+<p><strong>Install locally to test:</strong></p>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pyarmor
+</code></pre></div>
+
+<p><strong>Obfuscate manually:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Obfuscate your entire src/ directory</span>
+pyarmor<span class="w"> </span>gen<span class="w"> </span>src/
+
+<span class="c1"># Output lands in dist/</span>
+ls<span class="w"> </span>dist/
+</code></pre></div>
+
+<p><strong>In a GitHub Actions workflow</strong> (runs on release):</p>
+<p>Create <code>.github/workflows/build.yml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build &amp; Package</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">release</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">published</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># Triggers when you publish a GitHub Release</span>
+<span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span><span class="w">     </span><span class="c1"># Also allows manual trigger from the UI</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pip install pyarmor pyinstaller</span>
+<span class="w">          </span><span class="no">pip install -r requirements.txt</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Obfuscate source code</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pyarmor gen --output dist_obf/ src/</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bundle with PyInstaller</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pyinstaller --onefile --name myapp dist_obf/main.py</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Upload artifact</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/upload-artifact@v4</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-linux</span>
+<span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dist/myapp</span>
+</code></pre></div>
+
+<h3 id="114-trial-version-with-nag-screen">11.4 Trial version with nag screen</h3>
+<p>The nag-screen and registration system is <strong>application logic</strong> that you build into your Python code. GitHub Actions just packages and distributes it. Here is a recommended pattern:</p>
+<p><strong><code>src/trial.py</code></strong> — trial/registration module:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="n">TRIAL_DAYS</span> <span class="o">=</span> <span class="mi">14</span>
+<span class="n">LICENSE_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.myapp/license.key&quot;</span><span class="p">)</span>
+<span class="n">INSTALL_DATE_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.myapp/install_date&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_machine_id</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a hardware-based machine ID.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">getnode</span><span class="p">())</span>   <span class="c1"># MAC address as integer</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a valid license key exists.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">LICENSE_FILE</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">LICENSE_FILE</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># Validate: key must be SHA-256(machine_id + secret_salt)</span>
+    <span class="n">secret_salt</span> <span class="o">=</span> <span class="s2">&quot;CHANGE_THIS_TO_SOMETHING_SECRET&quot;</span>
+    <span class="n">machine_id</span> <span class="o">=</span> <span class="n">get_machine_id</span><span class="p">()</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">machine_id</span><span class="si">}{</span><span class="n">secret_salt</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">key</span> <span class="o">==</span> <span class="n">expected</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_trial_days_remaining</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return how many trial days are left; -1 if expired.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">INSTALL_DATE_FILE</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">INSTALL_DATE_FILE</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">INSTALL_DATE_FILE</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()))</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">INSTALL_DATE_FILE</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">install_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">install_date</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">TRIAL_DAYS</span> <span class="o">-</span> <span class="n">elapsed</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_and_show_nag</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call this at app startup.</span>
+<span class="sd">    - If registered: continue silently.</span>
+<span class="sd">    - If in trial: show nag with days remaining.</span>
+<span class="sd">    - If expired: block launch and show registration prompt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_registered</span><span class="p">():</span>
+        <span class="k">return</span>   <span class="c1"># Full version — no nag</span>
+
+    <span class="n">days_left</span> <span class="o">=</span> <span class="n">get_trial_days_remaining</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">days_left</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Your 14-day trial has EXPIRED.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  To continue using MyApp, please purchase a license.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Run:  myapp --register &lt;your-license-key&gt;&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [ MyApp — Trial Version: </span><span class="si">{</span><span class="n">days_left</span><span class="si">}</span><span class="s2"> day(s) remaining ]&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Register at: https://yoursite.com/buy&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a license key to disk.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">LICENSE_FILE</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_registered</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Already registered!&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">LICENSE_FILE</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">is_registered</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Registration successful! Thank you.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid license key. Please check and try again.&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong><code>src/main.py</code></strong> — entry point:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trial</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_and_show_nag</span><span class="p">,</span> <span class="n">register</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;--register&quot;</span><span class="p">:</span>
+        <span class="n">register</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span>
+    <span class="n">check_and_show_nag</span><span class="p">()</span>
+    <span class="c1"># --- Your actual application code starts here ---</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Welcome to MyApp!&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+
+<p><strong>Usage by end user:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run normally (trial mode)</span>
+./myapp
+
+<span class="c1"># Register with a purchased key</span>
+./myapp<span class="w"> </span>--register<span class="w"> </span>abc123def456...
+</code></pre></div>
+
+<h3 id="115-generating-and-distributing-license-keys">11.5 Generating and distributing license keys</h3>
+<p>Create a <strong>private</strong> key-generation script (never commit this to a public repo):</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># keygen.py  —  run locally or via a private GitHub Action</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="n">SECRET_SALT</span> <span class="o">=</span> <span class="s2">&quot;CHANGE_THIS_TO_SOMETHING_SECRET&quot;</span>   <span class="c1"># Must match trial.py</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_key</span><span class="p">(</span><span class="n">machine_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">machine_id</span><span class="si">}{</span><span class="n">SECRET_SALT</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">machine_id</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">generate_key</span><span class="p">(</span><span class="n">machine_id</span><span class="p">))</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Customer emails you their machine ID (printed by your app)</span>
+python<span class="w"> </span>keygen.py<span class="w"> </span><span class="s2">&quot;their_machine_id_here&quot;</span>
+<span class="c1"># → Send the output hash to the customer as their license key</span>
+</code></pre></div>
+
+<h3 id="116-full-automated-release-workflow">11.6 Full automated release workflow</h3>
+<p>This workflow fires when you publish a GitHub Release. It obfuscates, builds, and attaches the binary to the release.</p>
+<p>Create <code>.github/workflows/release.yml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Release Build</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">release</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">published</span><span class="p p-Indicator">]</span>
+
+<span class="nt">permissions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span><span class="w">   </span><span class="c1"># Needed to upload to the release</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build-linux</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install build tools</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pip install pyarmor pyinstaller</span>
+<span class="w">          </span><span class="no">pip install -r requirements.txt</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Obfuscate with PyArmor</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pyarmor gen --output obfuscated/ src/</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Package with PyInstaller</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pyinstaller \</span>
+<span class="w">            </span><span class="no">--onefile \</span>
+<span class="w">            </span><span class="no">--name myapp \</span>
+<span class="w">            </span><span class="no">--distpath ./release_dist \</span>
+<span class="w">            </span><span class="no">obfuscated/main.py</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Attach binary to GitHub Release</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">softprops/action-gh-release@v2</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">files</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">release_dist/myapp</span>
+<span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">GITHUB_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.GITHUB_TOKEN }}</span>
+</code></pre></div>
+
+<p><strong>Trigger the workflow:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Tag and create a release — this fires the workflow automatically</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;First release&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.0.0
+
+gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v1.0.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span><span class="s2">&quot;MyApp v1.0.0&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--notes<span class="w"> </span><span class="s2">&quot;Initial release with 14-day trial&quot;</span>
+</code></pre></div>
+
+<h3 id="117-using-github-secrets-for-sensitive-values">11.7 Using GitHub Secrets for sensitive values</h3>
+<p>Never hardcode API keys or your license salt in workflow files. Use GitHub Secrets:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Store a secret via CLI</span>
+gh<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>LICENSE_SALT<span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;your_secret_salt_value&quot;</span>
+gh<span class="w"> </span>secret<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PYARMOR_LICENSE<span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;your_pyarmor_license&quot;</span>
+</code></pre></div>
+
+<p>Reference in workflow YAML:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">env</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">LICENSE_SALT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.LICENSE_SALT }}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="12-quick-reference-cheat-sheet">12. Quick Reference Cheat Sheet</h2>
+<h3 id="essential-daily-commands">Essential daily commands</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>status<span class="w">                            </span><span class="c1"># What&#39;s changed?</span>
+git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>-10<span class="w">                 </span><span class="c1"># Last 10 commits</span>
+git<span class="w"> </span>diff<span class="w">                              </span><span class="c1"># Unstaged changes</span>
+git<span class="w"> </span>diff<span class="w"> </span>--staged<span class="w">                     </span><span class="c1"># Staged changes</span>
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>dev<span class="w">                   </span><span class="c1"># Get latest from remote</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>dev<span class="w">                   </span><span class="c1"># Send commits to remote</span>
+</code></pre></div>
+
+<h3 id="branch-operations">Branch operations</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>branch<span class="w">                            </span><span class="c1"># List local branches</span>
+git<span class="w"> </span>branch<span class="w"> </span>-a<span class="w">                         </span><span class="c1"># List all branches (inc. remote)</span>
+git<span class="w"> </span>checkout<span class="w"> </span>dev<span class="w">                      </span><span class="c1"># Switch to dev</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/x<span class="w">             </span><span class="c1"># Create and switch to new branch</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature/x<span class="w">               </span><span class="c1"># Delete local branch (safe)</span>
+git<span class="w"> </span>branch<span class="w"> </span>-D<span class="w"> </span>feature/x<span class="w">               </span><span class="c1"># Force-delete local branch</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--delete<span class="w"> </span>feature/x<span class="w">    </span><span class="c1"># Delete remote branch</span>
+</code></pre></div>
+
+<h3 id="sync-operations">Sync operations</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w">                      </span><span class="c1"># Download remote metadata</span>
+git<span class="w"> </span>pull<span class="w"> </span>--rebase<span class="w"> </span>origin<span class="w"> </span>dev<span class="w">          </span><span class="c1"># Pull with rebase (clean history)</span>
+git<span class="w"> </span>merge<span class="w"> </span>origin/dev<span class="w">                  </span><span class="c1"># Merge remote dev into current branch</span>
+</code></pre></div>
+
+<h3 id="undo-operations">Undo operations</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>restore<span class="w"> </span>filename<span class="w">                  </span><span class="c1"># Discard unstaged changes</span>
+git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>filename<span class="w">         </span><span class="c1"># Unstage a file</span>
+git<span class="w"> </span>revert<span class="w"> </span>HEAD<span class="w">                       </span><span class="c1"># Undo last commit (safe, adds commit)</span>
+git<span class="w"> </span>reset<span class="w"> </span>--soft<span class="w"> </span>HEAD~1<span class="w">               </span><span class="c1"># Undo commit, keep changes staged</span>
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>HEAD~1<span class="w">               </span><span class="c1"># Undo commit AND discard changes ⚠</span>
+</code></pre></div>
+
+<h3 id="gh-operations"><code>gh</code> operations</h3>
+<div class="codehilite"><pre><span></span><code>gh<span class="w"> </span>repo<span class="w"> </span>create<span class="w"> </span>myrepo<span class="w"> </span>--private<span class="w"> </span>--clone
+gh<span class="w"> </span>pr<span class="w"> </span>create<span class="w"> </span>--base<span class="w"> </span>dev<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;My PR&quot;</span>
+gh<span class="w"> </span>pr<span class="w"> </span>list
+gh<span class="w"> </span>pr<span class="w"> </span>merge<span class="w"> </span><span class="m">7</span><span class="w"> </span>--squash
+gh<span class="w"> </span>issue<span class="w"> </span>create<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;Bug&quot;</span><span class="w"> </span>--label<span class="w"> </span>bug
+gh<span class="w"> </span>issue<span class="w"> </span>list
+gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v1.0.0<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;v1&quot;</span>
+gh<span class="w"> </span>workflow<span class="w"> </span>list
+gh<span class="w"> </span>run<span class="w"> </span>list
+gh<span class="w"> </span>run<span class="w"> </span>view<span class="w"> </span><span class="m">12345</span>
+</code></pre></div>
+
+<hr />
+<h2 id="13-glossary">13. Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Branch</strong></td>
+<td>An independent line of development within a repo.</td>
+</tr>
+<tr>
+<td><strong>Checkout</strong></td>
+<td>Switch to a different branch or commit.</td>
+</tr>
+<tr>
+<td><strong>Cherry-pick</strong></td>
+<td>Apply a single commit from one branch onto another.</td>
+</tr>
+<tr>
+<td><strong>Clone</strong></td>
+<td>Copy a remote repo to your local machine.</td>
+</tr>
+<tr>
+<td><strong>Commit</strong></td>
+<td>A saved snapshot of staged changes.</td>
+</tr>
+<tr>
+<td><strong>Detached HEAD</strong></td>
+<td>State where HEAD points to a commit rather than a branch.</td>
+</tr>
+<tr>
+<td><strong>Fast-forward</strong></td>
+<td>A merge where the target branch just moves forward to the source; no merge commit needed.</td>
+</tr>
+<tr>
+<td><strong>Fetch</strong></td>
+<td>Download remote objects and refs without merging.</td>
+</tr>
+<tr>
+<td><strong>Fork</strong></td>
+<td>A personal copy of someone else's repo on GitHub.</td>
+</tr>
+<tr>
+<td><strong>gh</strong></td>
+<td>The GitHub CLI tool for interacting with GitHub from the terminal.</td>
+</tr>
+<tr>
+<td><strong>git</strong></td>
+<td>The distributed version control system itself.</td>
+</tr>
+<tr>
+<td><strong>HEAD</strong></td>
+<td>A pointer to the currently checked-out commit or branch.</td>
+</tr>
+<tr>
+<td><strong>Hook</strong></td>
+<td>A script that runs automatically at specific git events (pre-commit, post-merge, etc.).</td>
+</tr>
+<tr>
+<td><strong>Merge conflict</strong></td>
+<td>When two branches changed the same part of a file and git can't auto-resolve.</td>
+</tr>
+<tr>
+<td><strong>Origin</strong></td>
+<td>The conventional name for the primary remote repository (usually on GitHub).</td>
+</tr>
+<tr>
+<td><strong>PR (Pull Request)</strong></td>
+<td>A GitHub mechanism to review and merge branches.</td>
+</tr>
+<tr>
+<td><strong>Push</strong></td>
+<td>Upload local commits to a remote repo.</td>
+</tr>
+<tr>
+<td><strong>Rebase</strong></td>
+<td>Replay commits from one branch onto another, creating a linear history.</td>
+</tr>
+<tr>
+<td><strong>Remote</strong></td>
+<td>A version of the repo hosted on a server (e.g., GitHub).</td>
+</tr>
+<tr>
+<td><strong>Revert</strong></td>
+<td>Create a new commit that undoes a previous commit (safe for shared history).</td>
+</tr>
+<tr>
+<td><strong>Stash</strong></td>
+<td>Temporarily shelve uncommitted changes without committing them.</td>
+</tr>
+<tr>
+<td><strong>Tag</strong></td>
+<td>A named reference to a specific commit, typically used for releases.</td>
+</tr>
+<tr>
+<td><strong>Upstream</strong></td>
+<td>The remote branch that a local branch tracks.</td>
+</tr>
+<tr>
+<td><strong>Working Tree</strong></td>
+<td>The actual files on disk that you edit.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>This guide was written for Debian/Ubuntu Linux. All commands use Bash. For questions or corrections, open an issue in the repo.</em></p>
+</main>
+
+<script>
+// Add section number bubbles to h2 headings
+const h2s = document.querySelectorAll('main h2');
+h2s.forEach(h => {
+  const match = h.textContent.match(/^(\d+)\./);
+  if (match) {
+    const num = match[1];
+    const bubble = document.createElement('span');
+    bubble.className = 'section-num';
+    bubble.textContent = num;
+    h.insertBefore(bubble, h.firstChild);
+  }
+});
+
+// Add anchor IDs matching sidebar links
+const anchorMap = {
+  'Prerequisites': 'prerequisites',
+  '1.1': 'install',
+  '1.2': 'configure',
+  '1.3': 'authenticate',
+  'Core Concepts': 'concepts',
+  'Creating a New': 'create-repo',
+  'Branching Strategy': 'branching',
+  'Initializing': 'first-commit',
+  'Daily Development': 'daily-workflow',
+  'Issues:': 'issues',
+  'Pull Requests:': 'pull-requests',
+  'Promoting dev': 'promotions',
+  'Reverting': 'reverting',
+  'GitHub Actions': 'actions',
+  'Run tests on every': 'test-workflow',
+  'obfuscation with': 'obfuscation',
+  'Trial version': 'trial',
+  'Generating and': 'keygen',
+  'Full automated': 'release-workflow',
+  'Using GitHub Secrets': 'secrets',
+  'Quick Reference': 'cheatsheet',
+  'Glossary': 'glossary',
+};
+
+document.querySelectorAll('main h2, main h3').forEach(el => {
+  const text = el.textContent;
+  for (const [key, id] of Object.entries(anchorMap)) {
+    if (text.includes(key)) {
+      el.id = id;
+      break;
+    }
+  }
+});
+</script>
+
+</body>
+</html>
