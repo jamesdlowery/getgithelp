@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello World — GitHub Workflow Tutorial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1f2c;--border:#252a38;
+  --accent:#4af0a2;--accent2:#5b8fff;--accent3:#f0c44a;--accent4:#f06a4a;
+  --text:#d4daf0;--muted:#6b7594;--code-bg:#0a0c10;
+  --dev:#4af0a2;--test:#f0c44a;--prod:#f06a4a;--gh:#c084fc;
+  --new:#4af0a2;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;font-size:15px;line-height:1.7}
+
+/* SIDEBAR */
+#sidebar{position:fixed;top:0;left:0;width:278px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:0 0 40px}
+#sidebar .logo{padding:18px 20px 14px;border-bottom:1px solid var(--border);margin-bottom:8px;position:sticky;top:0;background:var(--bg2);z-index:1}
+#sidebar .logo h1{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);line-height:1.35}
+#sidebar .logo p{font-size:10px;color:var(--muted);margin-top:3px;font-family:'JetBrains Mono',monospace}
+#sidebar nav a{display:block;padding:3.5px 20px;font-size:11px;color:var(--muted);text-decoration:none;font-family:'JetBrains Mono',monospace;transition:color .12s,background .12s;border-left:2px solid transparent;line-height:1.5}
+#sidebar nav a:hover{color:var(--text);background:var(--bg3)}
+#sidebar nav a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(74,240,162,.05)}
+#sidebar nav .ns{padding:10px 20px 2px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--border);font-family:'Syne',sans-serif;font-weight:700}
+#sidebar nav a .ver{display:inline-block;min-width:30px;opacity:.6}
+
+/* MAIN */
+#main{margin-left:278px;padding:0 52px 100px;max-width:1100px}
+
+/* HERO */
+.hero{padding:60px 0 46px;border-bottom:1px solid var(--border);margin-bottom:52px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:13px}
+.hero h1{font-weight:800;font-size:clamp(30px,4.5vw,54px);line-height:1.05;color:#fff;margin-bottom:16px}
+.hero h1 span{color:var(--accent)}
+.hero .sub{font-size:15px;color:var(--muted);max-width:620px;line-height:1.75;margin-bottom:24px}
+.rs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.rb{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 9px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.rb .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.rb.major{border-color:rgba(74,240,162,.4);color:var(--accent)}
+.rb.major .dot{width:7px;height:7px}
+
+/* CHAPTER */
+.chapter{margin-bottom:64px}
+.ch{display:flex;align-items:flex-start;gap:15px;margin-bottom:26px;padding-bottom:15px;border-bottom:1px solid var(--border)}
+.cn{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);background:rgba(74,240,162,.07);border:1px solid rgba(74,240,162,.2);border-radius:4px;padding:3px 8px;flex-shrink:0;margin-top:5px;white-space:nowrap}
+.ch h2{font-weight:700;font-size:24px;color:#fff;line-height:1.2}
+.ch h2 small{display:block;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:3px;font-family:'JetBrains Mono',monospace}
+
+/* Release color variants */
+.rv01 .cn{color:#b8c1ff;border-color:rgba(184,193,255,.25);background:rgba(184,193,255,.06)}
+.rv02 .cn{color:#7dd3fc;border-color:rgba(125,211,252,.25);background:rgba(125,211,252,.06)}
+.rv03 .cn{color:#a5f3fc;border-color:rgba(165,243,252,.25);background:rgba(165,243,252,.06)}
+.rv04 .cn{color:#6ee7b7;border-color:rgba(110,231,183,.25);background:rgba(110,231,183,.06)}
+.rv05 .cn{color:#fde68a;border-color:rgba(253,230,138,.25);background:rgba(253,230,138,.06)}
+.rv10 .cn{color:var(--accent);border-color:rgba(74,240,162,.45);background:rgba(74,240,162,.1)}
+.rv11 .cn{color:#fb923c;border-color:rgba(251,146,60,.25);background:rgba(251,146,60,.06)}
+.rv12 .cn{color:#f87171;border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.06)}
+.rv13 .cn{color:#e879f9;border-color:rgba(232,121,249,.25);background:rgba(232,121,249,.06)}
+.rv14 .cn{color:#c084fc;border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.06)}
+.rv15 .cn{color:#60a5fa;border-color:rgba(96,165,250,.25);background:rgba(96,165,250,.06)}
+.rv16 .cn{color:#34d399;border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08)}
+
+/* STEPS */
+.steps{counter-reset:step-counter}
+.step{display:grid;grid-template-columns:34px 1fr;gap:0 15px;margin-bottom:20px;position:relative}
+.step::before{counter-increment:step-counter;content:counter(step-counter);width:34px;height:34px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent);position:relative;z-index:1;line-height:1;flex-shrink:0}
+.step::after{content:'';position:absolute;left:17px;top:34px;width:1px;height:calc(100% + 5px);background:var(--border)}
+.step:last-child::after{display:none}
+.sc{padding-top:5px;padding-bottom:8px}
+.sc h4{font-weight:600;font-size:14px;color:#fff;margin-bottom:6px}
+.sc p{color:var(--muted);font-size:13px;margin-bottom:7px}
+
+/* CODE BLOCKS */
+.cb{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:8px 0;font-family:'JetBrains Mono',monospace;font-size:12px}
+.cbh{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.cbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cbe{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;font-weight:600}
+.el{background:rgba(74,240,162,.1);color:var(--accent)}
+.ew{background:rgba(91,143,255,.1);color:var(--accent2)}
+.em{background:rgba(240,196,74,.1);color:var(--accent3)}
+.ea{background:rgba(192,192,192,.08);color:#999}
+.ep{background:rgba(240,196,74,.1);color:var(--accent3)}
+.ey{background:rgba(192,132,252,.1);color:var(--gh)}
+.cb pre{padding:12px 14px;overflow-x:auto;color:var(--text);line-height:1.65;white-space:pre}
+.cm{color:var(--muted)}
+.kw{color:#f97316}
+.st{color:var(--accent)}
+.fn{color:var(--accent2)}
+.ky{color:var(--gh)}
+.vl{color:var(--accent3)}
+
+/* BADGES */
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:3px;text-transform:uppercase;vertical-align:middle;margin:0 2px}
+.bd{background:rgba(74,240,162,.1);color:var(--dev);border:1px solid rgba(74,240,162,.2)}
+.bt{background:rgba(240,196,74,.1);color:var(--test);border:1px solid rgba(240,196,74,.2)}
+.bp{background:rgba(240,106,74,.1);color:var(--prod);border:1px solid rgba(240,106,74,.2)}
+.bg{background:rgba(192,132,252,.1);color:var(--gh);border:1px solid rgba(192,132,252,.2)}
+
+/* CALLOUTS */
+.callout{border-left:3px solid var(--accent);background:rgba(74,240,162,.04);border-radius:0 6px 6px 0;padding:11px 15px;margin:12px 0;font-size:13px;color:var(--muted)}
+.callout strong{color:#fff;display:block;margin-bottom:3px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.callout.warn{border-left-color:var(--accent3);background:rgba(240,196,74,.04)}
+.callout.danger{border-left-color:var(--accent4);background:rgba(240,106,74,.04)}
+.callout.major{border-left-color:var(--accent);background:rgba(74,240,162,.07);border-width:4px}
+.callout.new{border-left-color:var(--gh);background:rgba(192,132,252,.05)}
+
+/* FLOW */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:12px 0}
+.fn2{padding:4px 11px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600}
+.fn2.dev{background:rgba(74,240,162,.1);color:var(--dev);border:1px solid rgba(74,240,162,.25)}
+.fn2.test{background:rgba(240,196,74,.1);color:var(--test);border:1px solid rgba(240,196,74,.25)}
+.fn2.prod{background:rgba(240,106,74,.1);color:var(--prod);border:1px solid rgba(240,106,74,.25)}
+.fn2.tag{background:rgba(192,132,252,.1);color:var(--gh);border:1px solid rgba(192,132,252,.25)}
+.fn2.ci{background:rgba(91,143,255,.1);color:var(--accent2);border:1px solid rgba(91,143,255,.25)}
+.fa{color:var(--muted);font-size:13px;padding:0 1px}
+
+/* RELEASE HEADER */
+.rh{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:15px 19px;margin-bottom:20px;display:flex;align-items:center;gap:15px}
+.rt{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.rh h3{font-size:13.5px;color:#fff;margin-bottom:3px}
+.rh p{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* SUBSECTION */
+.ss{margin:20px 0 11px;display:flex;align-items:center;gap:9px}
+.ss h3{font-weight:600;font-size:14.5px;color:#fff;white-space:nowrap}
+.ss .line{flex:1;height:1px;background:var(--border)}
+
+/* PLATFORM LABELS */
+.pl{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px;padding:3px 9px;border-radius:3px}
+.pl-l{background:rgba(74,240,162,.08);color:var(--accent)}
+.pl-w{background:rgba(91,143,255,.08);color:var(--accent2)}
+.pl-m{background:rgba(240,196,74,.08);color:var(--accent3)}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0;font-family:'JetBrains Mono',monospace}
+th{background:var(--bg3);color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+
+/* MISC */
+.nb{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:11px 15px;font-size:12.5px;color:var(--muted);margin:10px 0}
+.og{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin:16px 0}
+.oc{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px}
+.oc .oi{font-size:18px;margin-bottom:6px}
+.oc h4{font-size:12.5px;color:#fff;margin-bottom:4px;font-weight:600}
+.oc p{font-size:11px;color:var(--muted);line-height:1.5}
+code{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--accent)}
+.file-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:2px 7px;color:var(--accent3);margin:2px}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:900px){#sidebar{display:none}#main{margin-left:0;padding:20px 20px 80px}}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav id="sidebar">
+  <div class="logo">
+    <h1>Hello World<br>GitHub Tutorial</h1>
+    <p>hello_world · 12 releases · v0.1–v1.6</p>
+  </div>
+  <nav>
+    <div class="ns">Foundation</div>
+    <a href="#setup">§0 — Prerequisites</a>
+    <a href="#repo">§1 — Repo &amp; Branches</a>
+    <a href="#actions">§2 — GitHub Actions Setup</a>
+    <a href="#issues">§3 — Issues &amp; Planning</a>
+    <a href="#commits">§4 — Commit Conventions</a>
+    <a href="#workflow">§5 — The Repeating Workflow</a>
+
+    <div class="ns">Cosmic (pre-v1.0)</div>
+    <a href="#r01"><span class="ver">v0.1</span> Hello, God!</a>
+    <a href="#r02"><span class="ver">v0.2</span> Hello, Universe!</a>
+    <a href="#r03"><span class="ver">v0.3</span> Hello, Local Group!</a>
+    <a href="#r04"><span class="ver">v0.4</span> Hello, Milky Way!</a>
+    <a href="#r05"><span class="ver">v0.5</span> Hello, Solar System!</a>
+
+    <div class="ns">Major Release</div>
+    <a href="#r10"><span class="ver">v1.0</span> ★ Hello, World!</a>
+
+    <div class="ns">Geographic (post-v1.0)</div>
+    <a href="#r11"><span class="ver">v1.1</span> Hello, United States!</a>
+    <a href="#r12"><span class="ver">v1.2</span> Hello, Alabama!</a>
+    <a href="#r13"><span class="ver">v1.3</span> Hello, Tuscaloosa County!</a>
+    <a href="#r14"><span class="ver">v1.4</span> Hello, Northport!</a>
+    <a href="#r15"><span class="ver">v1.5</span> Hello, Buckhead!</a>
+    <a href="#r16"><span class="ver">v1.6</span> 🏠 Hello, Foxtrail!</a>
+
+    <div class="ns">Reference</div>
+    <a href="#pr-ref">PR Procedures</a>
+    <a href="#relnotes-ref">Release Notes</a>
+    <a href="#cheatsheet">Quick Cheat Sheet</a>
+  </nav>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main id="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">GitHub Workflow Tutorial · hello_world · Linux · Windows · macOS · GitHub Actions</div>
+  <h1>Hello, <span>World!</span></h1>
+  <p class="sub">A complete, professional GitHub workflow tutorial covering issues, branches, conventional commits, PR procedures, automated cross-platform builds via GitHub Actions, tagging, and releases — across 12 incremental versions of a Python script compiled to native executables on Linux, Windows, and macOS.</p>
+  <div class="rs">
+    <div class="rb"><span class="dot"></span>v0.1 God</div>
+    <div class="rb"><span class="dot"></span>v0.2 Universe</div>
+    <div class="rb"><span class="dot"></span>v0.3 Local Group</div>
+    <div class="rb"><span class="dot"></span>v0.4 Milky Way</div>
+    <div class="rb"><span class="dot"></span>v0.5 Solar System</div>
+    <div class="rb major">★ v1.0 World</div>
+    <div class="rb"><span class="dot"></span>v1.1 United States</div>
+    <div class="rb"><span class="dot"></span>v1.2 Alabama</div>
+    <div class="rb"><span class="dot"></span>v1.3 Tuscaloosa County</div>
+    <div class="rb"><span class="dot"></span>v1.4 Northport</div>
+    <div class="rb"><span class="dot"></span>v1.5 Buckhead</div>
+    <div class="rb"><span class="dot" style="background:var(--accent3)"></span>v1.6 Foxtrail 🏠</div>
+  </div>
+</div>
+
+<!-- ═══ §0 PREREQUISITES ═══ -->
+<section class="chapter" id="setup">
+<div class="ch"><div class="cn">§ 0</div><h2>Prerequisites &amp; One-Time Setup<small>Install tools · GitHub account · Git identity · Authentication — done once</small></h2></div>
+
+<div class="og">
+  <div class="oc"><div class="oi">🐧</div><h4>Linux</h4><p>git, Python 3, gh CLI — via apt or your distro's package manager.</p></div>
+  <div class="oc"><div class="oi">🪟</div><h4>Windows</h4><p>Git for Windows, Python 3 from python.org, gh CLI via winget. Use PowerShell.</p></div>
+  <div class="oc"><div class="oi">🍎</div><h4>macOS</h4><p>Homebrew first, then: <code>brew install git python gh</code></p></div>
+  <div class="oc"><div class="oi">🔑</div><h4>GitHub Account</h4><p>Free account at github.com. PAT (classic) with <strong>repo</strong>, <strong>workflow</strong>, <strong>read:org</strong> scopes.</p></div>
+</div>
+
+<div class="ss"><h3>Install Git</h3><div class="line"></div></div>
+<div class="pl pl-l">🐧 Linux (Debian/Ubuntu)</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>sudo apt update &amp;&amp; sudo apt install -y git
+git --version</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell (Admin)</span><span class="cbe ew">Windows</span></div><pre>winget install --id Git.Git -e --source winget
+<span class="cm"># Close and reopen PowerShell, then verify:</span>
+git --version</pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install git &amp;&amp; git --version</pre></div>
+
+<div class="ss"><h3>Install Python 3</h3><div class="line"></div></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>sudo apt install -y python3 python3-pip &amp;&amp; python3 --version</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>winget install Python.Python.3
+<span class="cm"># Reopen terminal: python --version</span></pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>brew install python &amp;&amp; python3 --version</pre></div>
+
+<div class="ss"><h3>Install PyInstaller (builds platform executables)</h3><div class="line"></div></div>
+<div class="callout new"><strong>Why PyInstaller?</strong>PyInstaller compiles your Python script into a standalone native executable for the current platform — no Python installation required to run it. You install it on each platform you build on, or let GitHub Actions handle it automatically.</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>pip3 install pyinstaller      <span class="cm"># Linux / macOS</span>
+pip  install pyinstaller      <span class="cm"># Windows</span>
+pyinstaller --version</pre></div>
+
+<div class="ss"><h3>Install the GitHub CLI (gh)</h3><div class="line"></div></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>(type -p wget >/dev/null || (sudo apt update &amp;&amp; sudo apt install wget -y)) \
+  &amp;&amp; sudo mkdir -p -m 755 /etc/apt/keyrings \
+  &amp;&amp; wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+     | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+  &amp;&amp; sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  &amp;&amp; echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+     | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+  &amp;&amp; sudo apt update &amp;&amp; sudo apt install gh -y
+gh --version</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>winget install --id GitHub.cli &amp;&amp; gh --version</pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>brew install gh &amp;&amp; gh --version</pre></div>
+
+<div class="ss"><h3>Configure Git Identity — All Platforms, Run Once</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git config --global user.name  "Your Name"
+git config --global user.email "you@example.com"
+git config --global core.autocrlf false
+git config --global init.defaultBranch prod</pre></div>
+
+<div class="ss"><h3>Authenticate with GitHub</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">Option A — Interactive (recommended)</span><span class="cbe ea">All Platforms</span></div><pre>gh auth login
+<span class="cm"># Select: GitHub.com → HTTPS → Login with a web browser</span></pre></div>
+<div class="cb"><div class="cbh"><span class="cbl">Option B — Token env var (scripted/CI)</span><span class="cbe el">Linux / macOS</span></div><pre><span class="cm"># Add to ~/.bashrc or ~/.zshrc, then: source ~/.bashrc</span>
+export GH_TOKEN=ghp_YourPersonalAccessTokenHere</pre></div>
+<div class="cb"><div class="cbh"><span class="cbl">Option B — Token env var</span><span class="cbe ew">Windows PowerShell</span></div><pre>$env:GH_TOKEN = "ghp_YourPersonalAccessTokenHere"</pre></div>
+<div class="callout warn"><strong>Required Token Scopes</strong>github.com → Settings → Developer settings → Personal access tokens → Tokens (classic). Enable: <strong>repo</strong>, <strong>workflow</strong>, <strong>read:org</strong>. Verify with <code>gh auth status</code>.</div>
+</section>
+
+<!-- ═══ §1 REPO & BRANCHES ═══ -->
+<section class="chapter" id="repo">
+<div class="ch"><div class="cn">§ 1</div><h2>Repository &amp; Branch Structure<small>Done once — all 12 releases build on this foundation</small></h2></div>
+
+<div class="steps">
+<div class="step"><div class="sc">
+<h4>Create the <code>hello_world</code> repository on GitHub and clone it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh repo create hello_world \
+  --public \
+  --description "Hello World GitHub workflow tutorial — v0.1 through v1.6" \
+  --clone
+cd hello_world</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Add a placeholder README and make the initial commit on <span class="badge bp">prod</span></h4>
+<div class="pl pl-l">🐧 Linux / 🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux / macOS</span></div><pre>echo "# hello_world" > README.md
+git add README.md &amp;&amp; git commit -m "chore: initial commit"
+git push -u origin prod</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>"# hello_world" | Out-File README.md -Encoding utf8
+git add README.md &amp;&amp; git commit -m "chore: initial commit"
+git push -u origin prod</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Create the <span class="badge bt">test</span> branch from <span class="badge bp">prod</span>, push it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout -b test
+git push -u origin test</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Create the <span class="badge bd">dev</span> branch from <span class="badge bt">test</span>, push it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout -b dev
+git push -u origin dev</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Create the PR template directory and template files</h4>
+<p>PR templates pre-populate pull request descriptions with checklists, ensuring nothing is skipped at each promotion stage.</p>
+<div class="pl pl-l">🐧 Linux / 🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux / macOS</span></div><pre>mkdir -p .github/PULL_REQUEST_TEMPLATE
+
+cat > .github/PULL_REQUEST_TEMPLATE/dev_to_test.md &lt;&lt; 'EOF'
+## Promote to Test — Checklist
+
+**Release:** <!-- e.g. v1.1 -->
+**Issue:** closes #<!-- issue number -->
+
+### Changes
+- <!-- describe what was added or changed -->
+
+### Dev Build Verified
+- [ ] Tagged `dev-vX.X` on dev branch
+- [ ] GitHub Actions `build-dev` workflow completed successfully
+- [ ] `hello_world_dev_vX.X_linux` tested — correct output ✓
+- [ ] `hello_world_dev_vX.X_windows.exe` tested — correct output ✓
+- [ ] `hello_world_dev_vX.X_macos` tested — correct output ✓
+
+### Ready for Test
+- [ ] All dev executable tests pass on all 3 platforms
+- [ ] Conventional commit message used
+- [ ] No unrelated changes included
+EOF
+
+cat > .github/PULL_REQUEST_TEMPLATE/test_to_prod.md &lt;&lt; 'EOF'
+## Promote to Prod — Release Checklist
+
+**Release:** <!-- e.g. v1.1 -->
+**Issue:** closes #<!-- issue number -->
+
+### Test Build Verified
+- [ ] Tagged `test-vX.X` on test branch
+- [ ] GitHub Actions `build-test` workflow completed successfully
+- [ ] Draft GitHub Release created with test executables attached
+- [ ] `hello_world_test_vX.X_linux` acceptance tested ✓
+- [ ] `hello_world_test_vX.X_windows.exe` acceptance tested ✓
+- [ ] `hello_world_test_vX.X_macos` acceptance tested ✓
+
+### Release Ready
+- [ ] All acceptance tests pass on all 3 platforms
+- [ ] Release notes drafted
+- [ ] Ready to tag `prod-vX.X` after merge
+EOF</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>New-Item -ItemType Directory -Force -Path .github\PULL_REQUEST_TEMPLATE
+
+@'
+## Promote to Test — Checklist
+...
+'@ | Set-Content .github\PULL_REQUEST_TEMPLATE\dev_to_test.md -Encoding utf8
+
+<span class="cm"># Repeat for test_to_prod.md with the test template content</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Create the Issue template directory and template file</h4>
+<div class="pl pl-l">🐧 Linux / 🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux / macOS</span></div><pre>mkdir -p .github/ISSUE_TEMPLATE
+
+cat > .github/ISSUE_TEMPLATE/release.md &lt;&lt; 'EOF'
+---
+name: Release
+about: Track a planned hello_world release
+title: 'Release vX.X — Hello, [Scope]!'
+labels: release
+assignees: ''
+---
+
+## Release Plan
+
+**Version:** vX.X
+**Greeting to add:** `print("Hello, [Scope]!")`
+**Scope:** <!-- e.g. Country, State, City -->
+
+## Checklist
+
+### Dev
+- [ ] Checkout dev, add greeting, test locally
+- [ ] Commit with `feat: add Hello [Scope] (vX.X)`
+- [ ] Tag `dev-vX.X`, push tag → triggers build-dev workflow
+- [ ] Test dev executables on all 3 platforms
+- [ ] Open PR: dev → test (use dev_to_test template)
+
+### Test
+- [ ] Merge dev → test PR
+- [ ] Tag `test-vX.X`, push tag → triggers build-test workflow
+- [ ] Test executables attach to draft GitHub Release
+- [ ] Acceptance test all 3 platform executables
+- [ ] Open PR: test → prod (use test_to_prod template)
+
+### Prod
+- [ ] Merge test → prod PR
+- [ ] Tag `prod-vX.X`, push tag → triggers build-prod workflow
+- [ ] Prod executables attach to GitHub Release, draft published
+- [ ] Sync test and dev back to prod
+- [ ] Close this issue
+EOF</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Commit and push all templates</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git add .github/
+git commit -m "chore: add PR and issue templates"
+git push origin dev</pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Verify all three remote branches exist</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git branch -a
+<span class="cm"># Expected:
+#   remotes/origin/prod
+#   remotes/origin/test
+#   remotes/origin/dev</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc">
+<h4>Protect <span class="badge bp">prod</span> and <span class="badge bt">test</span> branches</h4>
+<p>GitHub web UI: <strong>Settings → Branches → Add branch protection rule</strong></p>
+<p>For both <code>prod</code> and <code>test</code>, enable:</p>
+<ul style="color:var(--muted);font-size:13px;margin:6px 0 6px 18px;line-height:1.9">
+  <li><em>Require a pull request before merging</em></li>
+  <li><em>Require approvals</em> (at least 1)</li>
+  <li><em>Require status checks to pass before merging</em> — add the relevant build workflow as a required check once it exists</li>
+</ul>
+</div></div>
+</div>
+
+<div class="callout"><strong>Branch Hierarchy</strong>All work starts in <span class="badge bd">dev</span>. Changes promote to <span class="badge bt">test</span> via PR, build and acceptance-test the executables, then promote from <span class="badge bt">test</span> to <span class="badge bp">prod</span> via a second PR. Each branch has its own build trigger tag prefix: <code>dev-v*</code>, <code>test-v*</code>, <code>prod-v*</code>.</div>
+</section>
+
+<!-- ═══ §2 GITHUB ACTIONS ═══ -->
+<section class="chapter" id="actions">
+<div class="ch"><div class="cn">§ 2</div><h2>GitHub Actions Workflows<small>Three automated build pipelines — one per branch stage — triggered by branch-scoped tags</small></h2></div>
+
+<div class="callout new"><strong>How It Works</strong>Pushing a branch-scoped tag (<code>dev-v0.1</code>, <code>test-v0.1</code>, <code>prod-v0.1</code>) triggers the corresponding GitHub Actions workflow. Each workflow builds three platform executables using PyInstaller on three runners (ubuntu, windows, macos) in parallel, then uploads them as artifacts (dev) or attaches them to a draft/published GitHub Release (test/prod).</div>
+
+<div class="flow">
+  <div class="fn2 dev">push dev-vX.X tag</div><div class="fa">→</div>
+  <div class="fn2 ci">build-dev.yml</div><div class="fa">→</div>
+  <div class="fn2 ci">3 platform builds</div><div class="fa">→</div>
+  <div class="fn2 ci">Actions artifacts</div><div class="fa">→</div>
+  <div class="fn2 dev">download &amp; test</div>
+</div>
+<div class="flow">
+  <div class="fn2 test">push test-vX.X tag</div><div class="fa">→</div>
+  <div class="fn2 ci">build-test.yml</div><div class="fa">→</div>
+  <div class="fn2 ci">3 platform builds</div><div class="fa">→</div>
+  <div class="fn2 test">draft GitHub Release</div><div class="fa">→</div>
+  <div class="fn2 test">acceptance test</div>
+</div>
+<div class="flow">
+  <div class="fn2 prod">push prod-vX.X tag</div><div class="fa">→</div>
+  <div class="fn2 ci">build-prod.yml</div><div class="fa">→</div>
+  <div class="fn2 ci">3 platform builds</div><div class="fa">→</div>
+  <div class="fn2 prod">publish GitHub Release</div><div class="fa">→</div>
+  <div class="fn2 prod">live</div>
+</div>
+
+<div class="ss"><h3>Create the Workflows Directory</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>mkdir -p .github/workflows</pre></div>
+
+<div class="ss"><h3>build-dev.yml — Dev Build (Actions Artifacts)</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">.github/workflows/build-dev.yml</span><span class="cbe ey">YAML</span></div><pre><span class="ky">name:</span> <span class="vl">Build Dev Executables</span>
+
+<span class="ky">on:</span>
+  <span class="ky">push:</span>
+    <span class="ky">tags:</span>
+      - <span class="st">'dev-v*'</span>          <span class="cm"># triggers ONLY on dev-vX.X tags</span>
+
+<span class="ky">jobs:</span>
+  <span class="ky">build:</span>
+    <span class="ky">strategy:</span>
+      <span class="ky">matrix:</span>
+        <span class="ky">os:</span> <span class="vl">[ubuntu-latest, windows-latest, macos-latest]</span>
+        <span class="ky">include:</span>
+          - <span class="ky">os:</span> <span class="vl">ubuntu-latest</span>
+            <span class="ky">platform:</span> <span class="vl">linux</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+          - <span class="ky">os:</span> <span class="vl">windows-latest</span>
+            <span class="ky">platform:</span> <span class="vl">windows</span>
+            <span class="ky">ext:</span> <span class="st">'.exe'</span>
+          - <span class="ky">os:</span> <span class="vl">macos-latest</span>
+            <span class="ky">platform:</span> <span class="vl">macos</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+
+    <span class="ky">runs-on:</span> <span class="vl">${{ matrix.os }}</span>
+
+    <span class="ky">steps:</span>
+      - <span class="ky">name:</span> <span class="vl">Checkout code</span>
+        <span class="ky">uses:</span> <span class="vl">actions/checkout@v4</span>
+
+      - <span class="ky">name:</span> <span class="vl">Set up Python</span>
+        <span class="ky">uses:</span> <span class="vl">actions/setup-python@v5</span>
+        <span class="ky">with:</span>
+          <span class="ky">python-version:</span> <span class="st">'3.12'</span>
+
+      - <span class="ky">name:</span> <span class="vl">Install PyInstaller</span>
+        <span class="ky">run:</span> <span class="vl">pip install pyinstaller</span>
+
+      - <span class="ky">name:</span> <span class="vl">Extract version from tag</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> <span class="vl">echo "VERSION=${GITHUB_REF_NAME#dev-}" >> $GITHUB_ENV</span>
+
+      - <span class="ky">name:</span> <span class="vl">Build executable</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> |
+          <span class="vl">OUTNAME="hello_world_dev_${{ env.VERSION }}_${{ matrix.platform }}${{ matrix.ext }}"</span>
+          <span class="vl">pyinstaller --onefile --name "$OUTNAME" hello_world_dev_${{ env.VERSION }}.py</span>
+
+      - <span class="ky">name:</span> <span class="vl">Upload artifact</span>
+        <span class="ky">uses:</span> <span class="vl">actions/upload-artifact@v4</span>
+        <span class="ky">with:</span>
+          <span class="ky">name:</span> <span class="vl">hello_world_dev_${{ env.VERSION }}_${{ matrix.platform }}</span>
+          <span class="ky">path:</span> <span class="vl">dist/hello_world_dev_*</span></pre></div>
+
+<div class="ss"><h3>build-test.yml — Test Build (Draft GitHub Release)</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">.github/workflows/build-test.yml</span><span class="cbe ey">YAML</span></div><pre><span class="ky">name:</span> <span class="vl">Build Test Executables</span>
+
+<span class="ky">on:</span>
+  <span class="ky">push:</span>
+    <span class="ky">tags:</span>
+      - <span class="st">'test-v*'</span>         <span class="cm"># triggers ONLY on test-vX.X tags</span>
+
+<span class="ky">jobs:</span>
+  <span class="ky">build:</span>
+    <span class="ky">strategy:</span>
+      <span class="ky">matrix:</span>
+        <span class="ky">os:</span> <span class="vl">[ubuntu-latest, windows-latest, macos-latest]</span>
+        <span class="ky">include:</span>
+          - <span class="ky">os:</span> <span class="vl">ubuntu-latest</span>
+            <span class="ky">platform:</span> <span class="vl">linux</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+          - <span class="ky">os:</span> <span class="vl">windows-latest</span>
+            <span class="ky">platform:</span> <span class="vl">windows</span>
+            <span class="ky">ext:</span> <span class="st">'.exe'</span>
+          - <span class="ky">os:</span> <span class="vl">macos-latest</span>
+            <span class="ky">platform:</span> <span class="vl">macos</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+
+    <span class="ky">runs-on:</span> <span class="vl">${{ matrix.os }}</span>
+
+    <span class="ky">steps:</span>
+      - <span class="ky">name:</span> <span class="vl">Checkout code</span>
+        <span class="ky">uses:</span> <span class="vl">actions/checkout@v4</span>
+
+      - <span class="ky">name:</span> <span class="vl">Set up Python</span>
+        <span class="ky">uses:</span> <span class="vl">actions/setup-python@v5</span>
+        <span class="ky">with:</span>
+          <span class="ky">python-version:</span> <span class="st">'3.12'</span>
+
+      - <span class="ky">name:</span> <span class="vl">Install PyInstaller</span>
+        <span class="ky">run:</span> <span class="vl">pip install pyinstaller</span>
+
+      - <span class="ky">name:</span> <span class="vl">Extract version from tag</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> <span class="vl">echo "VERSION=${GITHUB_REF_NAME#test-}" >> $GITHUB_ENV</span>
+
+      - <span class="ky">name:</span> <span class="vl">Build executable</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> |
+          <span class="vl">OUTNAME="hello_world_test_${{ env.VERSION }}_${{ matrix.platform }}${{ matrix.ext }}"</span>
+          <span class="vl">pyinstaller --onefile --name "$OUTNAME" hello_world_test_${{ env.VERSION }}.py</span>
+
+      - <span class="ky">name:</span> <span class="vl">Upload to draft GitHub Release</span>
+        <span class="ky">uses:</span> <span class="vl">softprops/action-gh-release@v2</span>
+        <span class="ky">with:</span>
+          <span class="ky">tag_name:</span> <span class="vl">${{ github.ref_name }}</span>
+          <span class="ky">name:</span> <span class="vl">TEST ${{ env.VERSION }} — Acceptance Testing Build</span>
+          <span class="ky">draft:</span> <span class="vl">true</span>
+          <span class="ky">prerelease:</span> <span class="vl">true</span>
+          <span class="ky">files:</span> <span class="vl">dist/hello_world_test_*</span>
+        <span class="ky">env:</span>
+          <span class="ky">GITHUB_TOKEN:</span> <span class="vl">${{ secrets.GITHUB_TOKEN }}</span></pre></div>
+
+<div class="ss"><h3>build-prod.yml — Prod Build (Published GitHub Release)</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">.github/workflows/build-prod.yml</span><span class="cbe ey">YAML</span></div><pre><span class="ky">name:</span> <span class="vl">Build Prod Executables</span>
+
+<span class="ky">on:</span>
+  <span class="ky">push:</span>
+    <span class="ky">tags:</span>
+      - <span class="st">'prod-v*'</span>         <span class="cm"># triggers ONLY on prod-vX.X tags</span>
+
+<span class="ky">jobs:</span>
+  <span class="ky">build:</span>
+    <span class="ky">strategy:</span>
+      <span class="ky">matrix:</span>
+        <span class="ky">os:</span> <span class="vl">[ubuntu-latest, windows-latest, macos-latest]</span>
+        <span class="ky">include:</span>
+          - <span class="ky">os:</span> <span class="vl">ubuntu-latest</span>
+            <span class="ky">platform:</span> <span class="vl">linux</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+          - <span class="ky">os:</span> <span class="vl">windows-latest</span>
+            <span class="ky">platform:</span> <span class="vl">windows</span>
+            <span class="ky">ext:</span> <span class="st">'.exe'</span>
+          - <span class="ky">os:</span> <span class="vl">macos-latest</span>
+            <span class="ky">platform:</span> <span class="vl">macos</span>
+            <span class="ky">ext:</span> <span class="st">''</span>
+
+    <span class="ky">runs-on:</span> <span class="vl">${{ matrix.os }}</span>
+
+    <span class="ky">steps:</span>
+      - <span class="ky">name:</span> <span class="vl">Checkout code</span>
+        <span class="ky">uses:</span> <span class="vl">actions/checkout@v4</span>
+
+      - <span class="ky">name:</span> <span class="vl">Set up Python</span>
+        <span class="ky">uses:</span> <span class="vl">actions/setup-python@v5</span>
+        <span class="ky">with:</span>
+          <span class="ky">python-version:</span> <span class="st">'3.12'</span>
+
+      - <span class="ky">name:</span> <span class="vl">Install PyInstaller</span>
+        <span class="ky">run:</span> <span class="vl">pip install pyinstaller</span>
+
+      - <span class="ky">name:</span> <span class="vl">Extract version from tag</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> <span class="vl">echo "VERSION=${GITHUB_REF_NAME#prod-}" >> $GITHUB_ENV</span>
+
+      - <span class="ky">name:</span> <span class="vl">Build executable</span>
+        <span class="ky">shell:</span> <span class="vl">bash</span>
+        <span class="ky">run:</span> |
+          <span class="vl">OUTNAME="hello_world_prod_${{ env.VERSION }}_${{ matrix.platform }}${{ matrix.ext }}"</span>
+          <span class="vl">pyinstaller --onefile --name "$OUTNAME" hello_world_prod_${{ env.VERSION }}.py</span>
+
+      - <span class="ky">name:</span> <span class="vl">Publish GitHub Release</span>
+        <span class="ky">uses:</span> <span class="vl">softprops/action-gh-release@v2</span>
+        <span class="ky">with:</span>
+          <span class="ky">tag_name:</span> <span class="vl">${{ github.ref_name }}</span>
+          <span class="ky">name:</span> <span class="vl">${{ env.VERSION }} — Hello World</span>
+          <span class="ky">draft:</span> <span class="vl">false</span>
+          <span class="ky">prerelease:</span> <span class="vl">false</span>
+          <span class="ky">files:</span> <span class="vl">dist/hello_world_prod_*</span>
+        <span class="ky">env:</span>
+          <span class="ky">GITHUB_TOKEN:</span> <span class="vl">${{ secrets.GITHUB_TOKEN }}</span></pre></div>
+
+<div class="ss"><h3>Commit and Push the Workflows</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git add .github/workflows/
+git commit -m "chore: add build-dev, build-test, build-prod GitHub Actions workflows"
+git push origin dev</pre></div>
+
+<div class="callout warn"><strong>Executable File Naming</strong>The file pushed into each branch determines the executable name. For release v1.1 on dev, the file must be named <code>hello_world_dev_v1.1.py</code>. The workflow strips the branch prefix from the tag to get the version, then builds: <span class="file-badge">hello_world_dev_v1.1_linux</span> <span class="file-badge">hello_world_dev_v1.1_windows.exe</span> <span class="file-badge">hello_world_dev_v1.1_macos</span></div>
+</section>
+
+<!-- ═══ §3 ISSUES & PLANNING ═══ -->
+<section class="chapter" id="issues">
+<div class="ch"><div class="cn">§ 3</div><h2>Issues &amp; Project Planning<small>Open an issue for every planned release before touching any code</small></h2></div>
+
+<div class="callout new"><strong>Why Issues First?</strong>GitHub Issues create a trackable record of planned work. Linking commits and PRs to issues gives you a complete audit trail — from "we decided to add this greeting" to "it shipped to prod." Issues also auto-close when the prod PR merges, keeping your issue tracker clean automatically.</div>
+
+<div class="ss"><h3>Opening a Release Issue</h3><div class="line"></div></div>
+<p style="color:var(--muted);font-size:13px;margin-bottom:10px">Use the <strong>Release</strong> issue template created in §1. Via the GitHub web UI or gh CLI:</p>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue create \
+  --title "Release v1.1 — Hello, United States!" \
+  --label "release" \
+  --body "## Release Plan
+
+**Version:** v1.1
+**Greeting:** \`print(\"Hello, United States!\")\`
+**Scope:** Country
+
+## Checklist
+- [ ] Dev: add greeting, test locally, tag dev-v1.1, test executables, PR dev→test
+- [ ] Test: tag test-v1.1, acceptance test executables, PR test→prod
+- [ ] Prod: tag prod-v1.1, publish release, sync branches, close issue"</pre></div>
+
+<div class="callout"><strong>Note the Issue Number</strong>GitHub assigns a number to each issue (e.g., #7). You'll reference this in your commit messages and PRs to create automatic cross-links. Check the output of <code>gh issue create</code> or the GitHub web UI to find it.</div>
+
+<div class="ss"><h3>Linking Issues to Commits and PRs</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Where</th><th>Syntax</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Commit message</td><td><code>refs #7</code> or <code>see #7</code></td><td>Creates a cross-link — issue stays open</td></tr>
+<tr><td>PR body</td><td><code>closes #7</code></td><td>Auto-closes the issue when the PR merges to the default branch (prod)</td></tr>
+<tr><td>PR body</td><td><code>fixes #7</code></td><td>Same as closes</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><strong>Important</strong><code>closes #N</code> in a PR body only auto-closes the issue when the PR merges into the <strong>default branch</strong> (prod). Put it in the test→prod PR body, not the dev→test PR body, so it fires at the right moment.</div>
+
+<div class="ss"><h3>Labels, Milestones, and Assignees</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI — create labels</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># Create labels (run once, after repo creation)</span>
+gh label create "release"  --color "#0075ca" --description "Planned release"
+gh label create "cosmic"   --color "#7057ff" --description "Cosmic phase v0.x"
+gh label create "geo"      --color "#e4e669" --description "Geographic phase v1.x"
+gh label create "major"    --color "#d93f0b" --description "Major release"</pre></div>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI — create a milestone</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># Optional: group all 12 releases under one milestone</span>
+gh api repos/:owner/:repo/milestones \
+  --method POST \
+  --field title="hello_world v0.1–v1.6" \
+  --field description="All 12 releases from Hello God to Hello Foxtrail"</pre></div>
+</section>
+
+<!-- ═══ §4 COMMIT CONVENTIONS ═══ -->
+<section class="chapter" id="commits">
+<div class="ch"><div class="cn">§ 4</div><h2>Commit Message Conventions<small>Conventional Commits — structured, readable, automation-friendly</small></h2></div>
+
+<div class="callout new"><strong>Why Conventional Commits?</strong>A consistent commit message format makes your history scannable at a glance, enables automated changelog generation, and signals intent clearly to reviewers and future maintainers. It also works with tools like semantic-release for automated versioning.</div>
+
+<div class="ss"><h3>Format</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">structure</span><span class="cbe ea">All commits</span></div><pre>&lt;type&gt;(&lt;scope&gt;): &lt;short description&gt;
+
+[optional body — wrap at 72 chars]
+
+[optional footer — refs #N, closes #N, BREAKING CHANGE: ...]</pre></div>
+
+<div class="ss"><h3>Types Used in This Project</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Type</th><th>When to Use</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>feat</code></td><td>A new greeting / feature</td><td><code>feat: add Hello United States (v1.1)</code></td></tr>
+<tr><td><code>fix</code></td><td>Correcting a bug or wrong output</td><td><code>fix: correct spelling of Tuscaloosa</code></td></tr>
+<tr><td><code>chore</code></td><td>Non-code changes — workflows, templates, config</td><td><code>chore: add GitHub Actions workflows</code></td></tr>
+<tr><td><code>docs</code></td><td>Documentation only changes</td><td><code>docs: update README with v1.1 release info</code></td></tr>
+<tr><td><code>ci</code></td><td>Changes to CI/CD config files</td><td><code>ci: pin PyInstaller to 6.x in build workflows</code></td></tr>
+<tr><td><code>refactor</code></td><td>Code change that neither fixes a bug nor adds a feature</td><td><code>refactor: extract greetings into a list</code></td></tr>
+<tr><td><code>test</code></td><td>Adding or correcting tests</td><td><code>test: add output verification script</code></td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>Examples from This Tutorial</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">good commit messages</span><span class="cbe ea">Examples</span></div><pre><span class="cm"># Adding a greeting (the most common commit in this project)</span>
+feat: add Hello God — initial hello_world_dev_v0.1.py
+
+<span class="cm"># Referencing the issue without closing it (dev→test PR merge)</span>
+feat: add Hello United States (v1.1) refs #7
+
+<span class="cm"># Closing the issue (goes in the test→prod PR body, not commit)</span>
+closes #7
+
+<span class="cm"># Chore commits</span>
+chore: add PR and issue templates
+chore: add build-dev, build-test, build-prod GitHub Actions workflows
+chore: sync dev and test branches to prod after v1.1 release</pre></div>
+
+<div class="callout warn"><strong>Keep the Subject Line Under 72 Characters</strong>Git truncates longer lines in many views. If you need more detail, use the body — leave a blank line after the subject, then write as much as you need.</div>
+</section>
+
+<!-- ═══ §5 REPEATING WORKFLOW ═══ -->
+<section class="chapter" id="workflow">
+<div class="ch"><div class="cn">§ 5</div><h2>The Repeating Workflow<small>Every one of the 12 releases follows this identical sequence</small></h2></div>
+
+<div class="flow">
+  <div class="fn2 dev">① open issue</div><div class="fa">→</div>
+  <div class="fn2 dev">② code on dev</div><div class="fa">→</div>
+  <div class="fn2 ci">③ tag dev-vX.X → build</div><div class="fa">→</div>
+  <div class="fn2 dev">④ test dev execs</div><div class="fa">→</div>
+  <div class="fn2 test">⑤ PR dev→test</div><div class="fa">→</div>
+  <div class="fn2 ci">⑥ tag test-vX.X → build</div><div class="fa">→</div>
+  <div class="fn2 test">⑦ accept test execs</div><div class="fa">→</div>
+  <div class="fn2 prod">⑧ PR test→prod</div><div class="fa">→</div>
+  <div class="fn2 ci">⑨ tag prod-vX.X → release</div><div class="fa">→</div>
+  <div class="fn2 prod">⑩ sync branches</div>
+</div>
+
+<div class="ss"><h3>The Full Template</h3><div class="line"></div></div>
+<div class="steps">
+
+<div class="step"><div class="sc"><h4>Open a GitHub Issue for the planned release</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue create \
+  --title "Release vX.X — Hello, [Scope]!" \
+  --label "release" \
+  --body "Checklist per the Release issue template."
+<span class="cm"># Note the issue number assigned — e.g. #7</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bd">dev</span>, pull latest, create the versioned source file</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout dev
+git pull origin dev
+<span class="cm"># Create or update: hello_world_dev_vX.X.py
+# (copy from previous version, add new print line, update docstring)</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Test the Python script locally</h4>
+<div class="cb"><div class="cbh"><span class="cbl">Linux / macOS</span><span class="cbe el">Linux / macOS</span></div><pre>python3 hello_world_dev_vX.X.py</pre></div>
+<div class="cb"><div class="cbh"><span class="cbl">Windows</span><span class="cbe ew">Windows</span></div><pre>python hello_world_dev_vX.X.py</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Commit and push to <span class="badge bd">dev</span></h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git add hello_world_dev_vX.X.py
+git commit -m "feat: add Hello [Scope] (vX.X) refs #N"
+git push origin dev</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Tag <code>dev-vX.X</code> and push — triggers the dev build workflow</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git tag -a dev-vX.X -m "Dev build vX.X — Hello [Scope]"
+git push origin dev-vX.X</pre></div>
+<div class="callout new"><strong>What Happens Next</strong>GitHub Actions <code>build-dev.yml</code> fires. Three runners (Linux, Windows, macOS) build the executables in parallel. When complete, the artifacts appear under: GitHub → your repo → Actions → the workflow run → Artifacts section.</div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Download and test the dev executables on all 3 platforms</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI — download artifact</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># List recent workflow runs to get the run ID</span>
+gh run list --workflow=build-dev.yml --limit=5
+
+<span class="cm"># Download the artifacts from the run</span>
+gh run download &lt;run-id&gt;</pre></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>chmod +x hello_world_dev_vX.X_linux
+./hello_world_dev_vX.X_linux
+<span class="cm"># ✓ verify all expected lines, correct order, no errors</span></pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>.\hello_world_dev_vX.X_windows.exe
+<span class="cm"># ✓ verify all expected lines, correct order, no errors</span></pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>chmod +x hello_world_dev_vX.X_macos
+./hello_world_dev_vX.X_macos
+<span class="cm"># ✓ verify all expected lines, correct order, no errors</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Open PR: <span class="badge bd">dev</span> → <span class="badge bt">test</span> — use the dev_to_test template</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base test --head dev \
+  --title "Promote vX.X to test — Hello [Scope]" \
+  --body "## Promote to Test — Checklist
+
+**Release:** vX.X
+**Issue:** refs #N
+
+### Changes
+- Added \`print(\"Hello, [Scope]!\")\` to hello_world_dev_vX.X.py
+
+### Dev Build Verified
+- [x] Tagged \`dev-vX.X\` — build-dev workflow completed ✓
+- [x] hello_world_dev_vX.X_linux tested ✓
+- [x] hello_world_dev_vX.X_windows.exe tested ✓
+- [x] hello_world_dev_vX.X_macos tested ✓
+
+### Ready for Test
+- [x] All dev executable tests pass on all 3 platforms"</pre></div>
+<div class="callout"><strong>PR Best Practices</strong>Assign yourself as the assignee. Add the <code>release</code> label. Request a reviewer if working with a team. Leave the PR as <strong>Draft</strong> while dev tests are still running; mark <strong>Ready for Review</strong> once all three dev executables pass.</div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Get the PR reviewed and approved, then merge it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># Merge after approval — use merge commit (not squash) to preserve history</span>
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bt">test</span>, pull, rename file for test stage</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test
+git pull origin test
+<span class="cm"># Rename: hello_world_dev_vX.X.py → hello_world_test_vX.X.py</span>
+git mv hello_world_dev_vX.X.py hello_world_test_vX.X.py
+git commit -m "chore: rename to hello_world_test_vX.X.py for test stage"
+git push origin test</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Tag <code>test-vX.X</code> and push — triggers the test build workflow</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git tag -a test-vX.X -m "Test build vX.X — Hello [Scope]"
+git push origin test-vX.X</pre></div>
+<div class="callout new"><strong>What Happens Next</strong>GitHub Actions <code>build-test.yml</code> fires. Three runners build test executables and attach them to a <strong>draft GitHub Release</strong> tagged <code>test-vX.X</code>. Go to GitHub → Releases to find the draft and download the test executables.</div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Download test executables from the draft Release and acceptance test all 3 platforms</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI — download from draft release</span><span class="cbe ea">All Platforms</span></div><pre>gh release download test-vX.X --dir ./test-artifacts</pre></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>chmod +x test-artifacts/hello_world_test_vX.X_linux
+./test-artifacts/hello_world_test_vX.X_linux
+<span class="cm"># ✓ all expected lines, correct order</span></pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>.\test-artifacts\hello_world_test_vX.X_windows.exe</pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>chmod +x test-artifacts/hello_world_test_vX.X_macos
+./test-artifacts/hello_world_test_vX.X_macos</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Open PR: <span class="badge bt">test</span> → <span class="badge bp">prod</span> — use the test_to_prod template</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base prod --head test \
+  --title "Release vX.X — Hello [Scope]" \
+  --body "## Promote to Prod — Release Checklist
+
+**Release:** vX.X
+**Issue:** closes #N
+
+### Test Build Verified
+- [x] Tagged \`test-vX.X\` — build-test workflow completed ✓
+- [x] Draft release created with test executables attached ✓
+- [x] hello_world_test_vX.X_linux acceptance tested ✓
+- [x] hello_world_test_vX.X_windows.exe acceptance tested ✓
+- [x] hello_world_test_vX.X_macos acceptance tested ✓
+
+### Release Ready
+- [x] All acceptance tests pass on all 3 platforms
+- [x] Release notes drafted"</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Get the PR reviewed and approved, then merge it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bp">prod</span>, pull, rename file for prod stage, tag <code>prod-vX.X</code></h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout prod
+git pull origin prod
+<span class="cm"># Rename: hello_world_test_vX.X.py → hello_world_prod_vX.X.py</span>
+git mv hello_world_test_vX.X.py hello_world_prod_vX.X.py
+git commit -m "chore: rename to hello_world_prod_vX.X.py for prod release"
+git push origin prod
+
+git tag -a prod-vX.X -m "Release vX.X — Hello [Scope]"
+git push origin prod-vX.X</pre></div>
+<div class="callout new"><strong>What Happens Next</strong>GitHub Actions <code>build-prod.yml</code> fires. Three runners build the final prod executables and publish the GitHub Release — <strong>draft:false</strong> — making it publicly visible. The release contains: <span class="file-badge">hello_world_prod_vX.X_linux</span> <span class="file-badge">hello_world_prod_vX.X_windows.exe</span> <span class="file-badge">hello_world_prod_vX.X_macos</span></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Sync <span class="badge bt">test</span> and <span class="badge bd">dev</span> back to <span class="badge bp">prod</span></h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test
+git checkout dev  &amp;&amp; git merge prod &amp;&amp; git push origin dev
+git checkout dev   <span class="cm"># return to dev — ready for next release</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Close the issue (if not auto-closed by the PR merge)</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue close N --comment "Released in vX.X — prod executables live."</pre></div>
+<div class="callout"><strong>Auto-Close</strong>If you included <code>closes #N</code> in the test→prod PR body, GitHub automatically closed the issue when that PR merged into prod. Check before running this step.</div>
+</div></div>
+
+</div>
+</section>
+
+<!-- ═══ RELEASES §6–§17 ═══ -->
+
+<!-- v0.1 -->
+<section class="chapter" id="r01">
+<div class="ch rv01"><div class="cn">§ 6</div><h2>Release v0.1 — Hello, God!<small>The very first commit — creating hello_world_dev_v0.1.py from scratch</small></h2></div>
+<div class="rh"><div class="rt" style="color:#b8c1ff">v0.1</div><div><h3>First release — 1 greeting — the journey begins</h3><p>File: <span class="file-badge">hello_world_dev_v0.1.py</span> → <span class="file-badge">hello_world_test_v0.1.py</span> → <span class="file-badge">hello_world_prod_v0.1.py</span></p></div></div>
+
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v0.1.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""
+hello_world_dev_v0.1.py
+Dev build — v0.1
+Cross-platform: Linux, Windows, macOS.
+"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+
+<div class="ss"><h3>Full Workflow</h3><div class="line"></div></div>
+<div class="steps">
+
+<div class="step"><div class="sc"><h4>Open GitHub Issue #1</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue create \
+  --title "Release v0.1 — Hello, God!" \
+  --label "release,cosmic" \
+  --body "Initial release. Creates hello_world_dev_v0.1.py with Hello God greeting."</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bd">dev</span> and pull</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout dev &amp;&amp; git pull origin dev</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Create <code>hello_world_dev_v0.1.py</code></h4>
+<div class="pl pl-l">🐧 Linux / 🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux / macOS</span></div><pre>cat > hello_world_dev_v0.1.py &lt;&lt; 'EOF'
+#!/usr/bin/env python3
+"""
+hello_world_dev_v0.1.py
+Dev build — v0.1
+Cross-platform: Linux, Windows, macOS.
+"""
+
+def main():
+    print("Hello, God!")
+
+if __name__ == "__main__":
+    main()
+EOF</pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>@'
+#!/usr/bin/env python3
+"""
+hello_world_dev_v0.1.py
+Dev build — v0.1
+Cross-platform: Linux, Windows, macOS.
+"""
+
+def main():
+    print("Hello, God!")
+
+if __name__ == "__main__":
+    main()
+'@ | Set-Content hello_world_dev_v0.1.py -Encoding utf8</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Test the Python script locally</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>python3 hello_world_dev_v0.1.py   <span class="cm"># Linux / macOS</span>
+python  hello_world_dev_v0.1.py   <span class="cm"># Windows</span>
+<span class="cm"># Expected: Hello, God!</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Commit and push to <span class="badge bd">dev</span></h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git add hello_world_dev_v0.1.py
+git commit -m "feat: add Hello God — initial hello_world_dev_v0.1.py refs #1"
+git push origin dev</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Tag <code>dev-v0.1</code> and push — triggers dev build</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git tag -a dev-v0.1 -m "Dev build v0.1 — Hello God"
+git push origin dev-v0.1
+<span class="cm"># ⚙ GitHub Actions build-dev.yml fires — watch at: github.com/&lt;you&gt;/hello_world/actions</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Download dev artifacts and test all 3 platform executables</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh run list --workflow=build-dev.yml --limit=3
+gh run download &lt;run-id&gt;</pre></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>chmod +x hello_world_dev_v0.1_linux &amp;&amp; ./hello_world_dev_v0.1_linux
+<span class="cm"># ✓  Hello, God!</span></pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>.\hello_world_dev_v0.1_windows.exe
+<span class="cm"># ✓  Hello, God!</span></pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>chmod +x hello_world_dev_v0.1_macos &amp;&amp; ./hello_world_dev_v0.1_macos
+<span class="cm"># ✓  Hello, God!</span></pre></div>
+<div class="callout"><strong>Pass Criteria</strong>All three executables print exactly <code>Hello, God!</code> — no errors, exit code 0.</div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Open PR: <span class="badge bd">dev</span> → <span class="badge bt">test</span>, get it reviewed, merge it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base test --head dev \
+  --title "Promote v0.1 to test — Hello God" \
+  --body "**Release:** v0.1  **Issue:** refs #1
+
+Dev build verified on all 3 platforms. All executables print 'Hello, God!' correctly.
+- [x] hello_world_dev_v0.1_linux ✓
+- [x] hello_world_dev_v0.1_windows.exe ✓
+- [x] hello_world_dev_v0.1_macos ✓"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bt">test</span>, rename file, push</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git pull origin test
+git mv hello_world_dev_v0.1.py hello_world_test_v0.1.py
+git commit -m "chore: rename to hello_world_test_v0.1.py for test stage"
+git push origin test</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Tag <code>test-v0.1</code> and push — triggers test build (draft release)</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git tag -a test-v0.1 -m "Test build v0.1 — Hello God"
+git push origin test-v0.1
+<span class="cm"># ⚙ build-test.yml fires — draft GitHub Release created with test executables</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Download test executables from draft release — acceptance test all 3 platforms</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh release download test-v0.1 --dir ./test-artifacts
+<span class="cm"># Test each executable — same pass criteria as dev</span>
+chmod +x test-artifacts/hello_world_test_v0.1_linux
+./test-artifacts/hello_world_test_v0.1_linux           <span class="cm"># ✓  Hello, God!</span>
+./test-artifacts/hello_world_test_v0.1_windows.exe     <span class="cm"># ✓  Windows</span>
+./test-artifacts/hello_world_test_v0.1_macos           <span class="cm"># ✓  macOS</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Open PR: <span class="badge bt">test</span> → <span class="badge bp">prod</span>, get it reviewed, merge it</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base prod --head test \
+  --title "Release v0.1 — Hello God" \
+  --body "**Release:** v0.1  **Issue:** closes #1
+
+All acceptance tests pass on all 3 platforms.
+- [x] hello_world_test_v0.1_linux ✓
+- [x] hello_world_test_v0.1_windows.exe ✓
+- [x] hello_world_test_v0.1_macos ✓"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Switch to <span class="badge bp">prod</span>, rename file, tag <code>prod-v0.1</code>, push — triggers prod release</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout prod &amp;&amp; git pull origin prod
+git mv hello_world_test_v0.1.py hello_world_prod_v0.1.py
+git commit -m "chore: rename to hello_world_prod_v0.1.py for prod release"
+git push origin prod
+git tag -a prod-v0.1 -m "Release v0.1 — Hello God"
+git push origin prod-v0.1
+<span class="cm"># ⚙ build-prod.yml fires — publishes GitHub Release with 3 prod executables</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Sync branches and close issue</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test
+git checkout dev  &amp;&amp; git merge prod &amp;&amp; git push origin dev
+git checkout dev
+<span class="cm"># Issue #1 auto-closed by the test→prod PR merge (closes #1)</span></pre></div>
+</div></div>
+
+</div>
+<div class="nb">🎉 <strong>v0.1 shipped!</strong> Three prod executables live on GitHub Releases: <span class="file-badge">hello_world_prod_v0.1_linux</span> <span class="file-badge">hello_world_prod_v0.1_windows.exe</span> <span class="file-badge">hello_world_prod_v0.1_macos</span></div>
+</section>
+
+<!-- v0.2 through v0.5 — condensed -->
+<section class="chapter" id="r02">
+<div class="ch rv02"><div class="cn">§ 7</div><h2>Release v0.2 — Hello, Universe!<small>All of existence — second cosmic scope</small></h2></div>
+<div class="rh"><div class="rt" style="color:#7dd3fc">v0.2</div><div><h3>Add "Hello, Universe!" — 2 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v0.2.py</span> → <span class="file-badge">hello_world_test_v0.2.py</span> → <span class="file-badge">hello_world_prod_v0.2.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v0.2.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v0.2.py — Dev build — v0.2"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># 1. Open issue</span>
+gh issue create --title "Release v0.2 — Hello, Universe!" --label "release,cosmic"
+
+<span class="cm"># 2. Dev: create file, test script, commit, push, tag → build, test executables</span>
+git checkout dev &amp;&amp; git pull origin dev
+<span class="cm"># Create hello_world_dev_v0.2.py (copy v0.1, add print("Hello, Universe!"), update docstring)</span>
+python3 hello_world_dev_v0.2.py   <span class="cm"># verify 2 lines</span>
+git add hello_world_dev_v0.2.py
+git commit -m "feat: add Hello Universe (v0.2) refs #2"
+git push origin dev
+git tag -a dev-v0.2 -m "Dev build v0.2 — Hello Universe" &amp;&amp; git push origin dev-v0.2
+<span class="cm"># ⚙ build-dev.yml fires — download artifacts, test all 3 executables ✓</span>
+
+<span class="cm"># 3. PR dev→test, merge</span>
+gh pr create --base test --head dev \
+  --title "Promote v0.2 to test — Hello Universe" \
+  --body "**Issue:** refs #2  All dev executables verified ✓"
+gh pr merge --merge --delete-branch=false
+
+<span class="cm"># 4. Test: rename, push, tag → build, acceptance test executables</span>
+git checkout test &amp;&amp; git pull origin test
+git mv hello_world_dev_v0.2.py hello_world_test_v0.2.py
+git commit -m "chore: rename to hello_world_test_v0.2.py" &amp;&amp; git push origin test
+git tag -a test-v0.2 -m "Test build v0.2" &amp;&amp; git push origin test-v0.2
+<span class="cm"># ⚙ build-test.yml fires — draft release created — download &amp; acceptance test all 3 ✓</span>
+gh release download test-v0.2 --dir ./test-artifacts
+
+<span class="cm"># 5. PR test→prod, merge</span>
+gh pr create --base prod --head test \
+  --title "Release v0.2 — Hello Universe" \
+  --body "**Issue:** closes #2  All acceptance tests pass ✓"
+gh pr merge --merge --delete-branch=false
+
+<span class="cm"># 6. Prod: rename, push, tag → publish release</span>
+git checkout prod &amp;&amp; git pull origin prod
+git mv hello_world_test_v0.2.py hello_world_prod_v0.2.py
+git commit -m "chore: rename to hello_world_prod_v0.2.py" &amp;&amp; git push origin prod
+git tag -a prod-v0.2 -m "Release v0.2 — Hello Universe" &amp;&amp; git push origin prod-v0.2
+<span class="cm"># ⚙ build-prod.yml fires — publishes GitHub Release</span>
+
+<span class="cm"># 7. Sync branches</span>
+git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test
+git checkout dev  &amp;&amp; git merge prod &amp;&amp; git push origin dev
+git checkout dev</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v0.2 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r03">
+<div class="ch rv03"><div class="cn">§ 8</div><h2>Release v0.3 — Hello, Local Group!<small>Our galaxy cluster — ~80 galaxies including Milky Way &amp; Andromeda</small></h2></div>
+<div class="rh"><div class="rt" style="color:#a5f3fc">v0.3</div><div><h3>Add "Hello, Local Group!" — 3 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v0.3.py</span> → <span class="file-badge">hello_world_test_v0.3.py</span> → <span class="file-badge">hello_world_prod_v0.3.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v0.3.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v0.3.py — Dev build — v0.3"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow the §5 template, substituting v0.3 / issue #3 / "Local Group"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Local Group (v0.3) refs #3"
+git tag -a dev-v0.3  -m "Dev build v0.3"  &amp;&amp; git push origin dev-v0.3
+git tag -a test-v0.3 -m "Test build v0.3" &amp;&amp; git push origin test-v0.3
+git tag -a prod-v0.3 -m "Release v0.3 — Hello Local Group" &amp;&amp; git push origin prod-v0.3
+<span class="cm"># PR bodies: refs #3 (dev→test)  closes #3 (test→prod)</span>
+<span class="cm"># Verify: 3 lines on all executables at dev and test stages</span></pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v0.3 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r04">
+<div class="ch rv04"><div class="cn">§ 9</div><h2>Release v0.4 — Hello, Milky Way!<small>Our galaxy — ~100 billion stars</small></h2></div>
+<div class="rh"><div class="rt" style="color:#6ee7b7">v0.4</div><div><h3>Add "Hello, Milky Way!" — 4 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v0.4.py</span> → <span class="file-badge">hello_world_test_v0.4.py</span> → <span class="file-badge">hello_world_prod_v0.4.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v0.4.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v0.4.py — Dev build — v0.4"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v0.4 / issue #4 / "Milky Way"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Milky Way (v0.4) refs #4"
+git tag -a dev-v0.4  -m "Dev build v0.4"  &amp;&amp; git push origin dev-v0.4
+git tag -a test-v0.4 -m "Test build v0.4" &amp;&amp; git push origin test-v0.4
+git tag -a prod-v0.4 -m "Release v0.4 — Hello Milky Way" &amp;&amp; git push origin prod-v0.4</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v0.4 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r05">
+<div class="ch rv05"><div class="cn">§ 10</div><h2>Release v0.5 — Hello, Solar System!<small>Our star and 8 planets — last pre-v1.0 release</small></h2></div>
+<div class="rh"><div class="rt" style="color:#fde68a">v0.5</div><div><h3>Add "Hello, Solar System!" — 5 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v0.5.py</span> → <span class="file-badge">hello_world_test_v0.5.py</span> → <span class="file-badge">hello_world_prod_v0.5.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v0.5.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v0.5.py — Dev build — v0.5"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v0.5 / issue #5 / "Solar System"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Solar System (v0.5) refs #5"
+git tag -a dev-v0.5  -m "Dev build v0.5"  &amp;&amp; git push origin dev-v0.5
+git tag -a test-v0.5 -m "Test build v0.5" &amp;&amp; git push origin test-v0.5
+git tag -a prod-v0.5 -m "Release v0.5 — Hello Solar System" &amp;&amp; git push origin prod-v0.5</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v0.5 shipped!</strong> Cosmic phase complete. Next: the major release.</div>
+</section>
+
+<!-- v1.0 MAJOR -->
+<section class="chapter" id="r10">
+<div class="ch rv10"><div class="cn">§ 11</div><h2>Release v1.0 — Hello, World! ★<small>The major release — the namesake of the repository</small></h2></div>
+<div class="rh" style="border-color:rgba(74,240,162,.4);background:rgba(74,240,162,.04)">
+  <div class="rt" style="color:var(--accent);font-size:22px">v1.0</div>
+  <div><h3>Add "Hello, World!" — 6 greetings — MAJOR VERSION BUMP</h3><p>Files: <span class="file-badge">hello_world_dev_v1.0.py</span> → <span class="file-badge">hello_world_test_v1.0.py</span> → <span class="file-badge">hello_world_prod_v1.0.py</span></p></div>
+</div>
+<div class="callout major"><strong>Why v1.0 here?</strong>"Hello, World!" is the name of the repository — the universally recognized programming landmark. The version bump from v0.5 to v1.0 marks this as the centerpiece release. Pre-1.0 was the cosmic build-up; post-1.0 zooms geographically from Earth all the way home.</div>
+
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.0.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""
+hello_world_dev_v1.0.py
+Dev build — v1.0 — The Hello World milestone release.
+Cross-platform: Linux, Windows, macOS.
+"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+
+<div class="ss"><h3>Full Workflow (major release — full steps shown)</h3><div class="line"></div></div>
+<div class="steps">
+<div class="step"><div class="sc"><h4>Open GitHub Issue #6 — major release label</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue create \
+  --title "Release v1.0 — Hello, World! ★ MAJOR RELEASE" \
+  --label "release,major" \
+  --body "The namesake greeting. Version bumps from v0.5 to v1.0."</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Dev: create file, test, commit, push, tag, test executables</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout dev &amp;&amp; git pull origin dev
+<span class="cm"># Create hello_world_dev_v1.0.py (copy v0.5, add print("Hello, World!"), update docstring)</span>
+python3 hello_world_dev_v1.0.py   <span class="cm"># verify 6 lines</span>
+git add hello_world_dev_v1.0.py
+git commit -m "feat: add Hello World — major v1.0 milestone refs #6"
+git push origin dev
+git tag -a dev-v1.0 -m "Dev build v1.0 — Hello World MAJOR" &amp;&amp; git push origin dev-v1.0
+<span class="cm"># ⚙ build-dev.yml fires — download artifacts, test all 3 executables (6 lines each) ✓</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>PR dev → test with major release body, merge</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base test --head dev \
+  --title "Promote v1.0 to test — Hello World (MAJOR RELEASE)" \
+  --body "**Release:** v1.0 ★  **Issue:** refs #6
+
+## Changes
+Adds 'Hello, World!' — the namesake greeting. MAJOR version bump from v0.5.
+
+## Dev Build Verified
+- [x] hello_world_dev_v1.0_linux — 6 lines ✓
+- [x] hello_world_dev_v1.0_windows.exe — 6 lines ✓
+- [x] hello_world_dev_v1.0_macos — 6 lines ✓"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Test: rename, tag, acceptance test all 3 executables (6 lines each)</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git pull origin test
+git mv hello_world_dev_v1.0.py hello_world_test_v1.0.py
+git commit -m "chore: rename to hello_world_test_v1.0.py" &amp;&amp; git push origin test
+git tag -a test-v1.0 -m "Test build v1.0 — Hello World" &amp;&amp; git push origin test-v1.0
+<span class="cm"># ⚙ build-test.yml fires — draft release with test executables
+# gh release download test-v1.0 --dir ./test-artifacts
+# Test all 3 executables — verify 6 lines each ✓</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>PR test → prod with full major release body, merge</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base prod --head test \
+  --title "★ Release v1.0 — Hello, World!" \
+  --body "## v1.0 — Major Release
+
+**Issue:** closes #6
+
+The namesake greeting has arrived. Greetings now include:
+- Hello, God! · Hello, Universe! · Hello, Local Group!
+- Hello, Milky Way! · Hello, Solar System!
+- **Hello, World!** ← NEW
+
+## Acceptance Test Results
+- [x] hello_world_test_v1.0_linux — 6 lines ✓
+- [x] hello_world_test_v1.0_windows.exe — 6 lines ✓
+- [x] hello_world_test_v1.0_macos — 6 lines ✓
+
+Linux ✅ | Windows ✅ | macOS ✅"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Prod: rename, tag, publish release</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout prod &amp;&amp; git pull origin prod
+git mv hello_world_test_v1.0.py hello_world_prod_v1.0.py
+git commit -m "chore: rename to hello_world_prod_v1.0.py for prod release"
+git push origin prod
+git tag -a prod-v1.0 -m "Release v1.0 — Hello, World! — major milestone"
+git push origin prod-v1.0
+<span class="cm"># ⚙ build-prod.yml fires — publishes GitHub Release ★</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Sync branches</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test
+git checkout dev  &amp;&amp; git merge prod &amp;&amp; git push origin dev
+git checkout dev</pre></div>
+</div></div>
+</div>
+<div class="nb">🌍 <strong>v1.0 shipped! Hello, World!</strong> — The major milestone. Geographic releases begin next.</div>
+</section>
+
+<!-- v1.1 through v1.6 — condensed pipeline -->
+
+<section class="chapter" id="r11">
+<div class="ch rv11"><div class="cn">§ 12</div><h2>Release v1.1 — Hello, United States!<small>Country level — geographic descent begins</small></h2></div>
+<div class="rh"><div class="rt" style="color:#fb923c">v1.1</div><div><h3>Add "Hello, United States!" — 7 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v1.1.py</span> → <span class="file-badge">hello_world_test_v1.1.py</span> → <span class="file-badge">hello_world_prod_v1.1.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.1.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v1.1.py — Dev build — v1.1"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v1.1 / issue #7 / "United States"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello United States (v1.1) refs #7"
+git tag -a dev-v1.1  -m "Dev build v1.1"  &amp;&amp; git push origin dev-v1.1
+git tag -a test-v1.1 -m "Test build v1.1" &amp;&amp; git push origin test-v1.1
+git tag -a prod-v1.1 -m "Release v1.1 — Hello United States" &amp;&amp; git push origin prod-v1.1
+<span class="cm"># PR bodies: refs #7 (dev→test)  closes #7 (test→prod)
+# Verify: 7 lines on all executables at dev and test stages</span></pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v1.1 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r12">
+<div class="ch rv12"><div class="cn">§ 13</div><h2>Release v1.2 — Hello, Alabama!<small>State level — the Heart of Dixie</small></h2></div>
+<div class="rh"><div class="rt" style="color:#f87171">v1.2</div><div><h3>Add "Hello, Alabama!" — 8 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v1.2.py</span> → <span class="file-badge">hello_world_test_v1.2.py</span> → <span class="file-badge">hello_world_prod_v1.2.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.2.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v1.2.py — Dev build — v1.2"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Alabama!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v1.2 / issue #8 / "Alabama"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Alabama (v1.2) refs #8"
+git tag -a dev-v1.2  -m "Dev build v1.2"  &amp;&amp; git push origin dev-v1.2
+git tag -a test-v1.2 -m "Test build v1.2" &amp;&amp; git push origin test-v1.2
+git tag -a prod-v1.2 -m "Release v1.2 — Hello Alabama" &amp;&amp; git push origin prod-v1.2</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v1.2 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r13">
+<div class="ch rv13"><div class="cn">§ 14</div><h2>Release v1.3 — Hello, Tuscaloosa County!<small>County level — home of the University of Alabama</small></h2></div>
+<div class="rh"><div class="rt" style="color:#e879f9">v1.3</div><div><h3>Add "Hello, Tuscaloosa County!" — 9 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v1.3.py</span> → <span class="file-badge">hello_world_test_v1.3.py</span> → <span class="file-badge">hello_world_prod_v1.3.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.3.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v1.3.py — Dev build — v1.3"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Alabama!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Tuscaloosa County!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v1.3 / issue #9 / "Tuscaloosa County"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Tuscaloosa County (v1.3) refs #9"
+git tag -a dev-v1.3  -m "Dev build v1.3"  &amp;&amp; git push origin dev-v1.3
+git tag -a test-v1.3 -m "Test build v1.3" &amp;&amp; git push origin test-v1.3
+git tag -a prod-v1.3 -m "Release v1.3 — Hello Tuscaloosa County" &amp;&amp; git push origin prod-v1.3</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v1.3 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r14">
+<div class="ch rv14"><div class="cn">§ 15</div><h2>Release v1.4 — Hello, Northport!<small>City level — Northport, Alabama, in Tuscaloosa County</small></h2></div>
+<div class="rh"><div class="rt" style="color:#c084fc">v1.4</div><div><h3>Add "Hello, Northport!" — 10 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v1.4.py</span> → <span class="file-badge">hello_world_test_v1.4.py</span> → <span class="file-badge">hello_world_prod_v1.4.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.4.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v1.4.py — Dev build — v1.4"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Alabama!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Tuscaloosa County!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Northport!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v1.4 / issue #10 / "Northport"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Northport (v1.4) refs #10"
+git tag -a dev-v1.4  -m "Dev build v1.4"  &amp;&amp; git push origin dev-v1.4
+git tag -a test-v1.4 -m "Test build v1.4" &amp;&amp; git push origin test-v1.4
+git tag -a prod-v1.4 -m "Release v1.4 — Hello Northport" &amp;&amp; git push origin prod-v1.4</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v1.4 shipped!</strong></div>
+</section>
+
+<section class="chapter" id="r15">
+<div class="ch rv15"><div class="cn">§ 16</div><h2>Release v1.5 — Hello, Buckhead!<small>Neighborhood level — Buckhead in Northport, Alabama</small></h2></div>
+<div class="rh"><div class="rt" style="color:#60a5fa">v1.5</div><div><h3>Add "Hello, Buckhead!" — 11 greetings total</h3><p>Files: <span class="file-badge">hello_world_dev_v1.5.py</span> → <span class="file-badge">hello_world_test_v1.5.py</span> → <span class="file-badge">hello_world_prod_v1.5.py</span></p></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.5.py — complete file</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""hello_world_dev_v1.5.py — Dev build — v1.5"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Alabama!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Tuscaloosa County!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Northport!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Buckhead!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+<div class="steps"><div class="step"><div class="sc"><h4>Full pipeline — follow §5 template, substituting v1.5 / issue #11 / "Buckhead"</h4>
+<div class="cb"><div class="cbh"><span class="cbl">key commands</span><span class="cbe ea">All Platforms</span></div><pre>git commit -m "feat: add Hello Buckhead (v1.5) refs #11"
+git tag -a dev-v1.5  -m "Dev build v1.5"  &amp;&amp; git push origin dev-v1.5
+git tag -a test-v1.5 -m "Test build v1.5" &amp;&amp; git push origin test-v1.5
+git tag -a prod-v1.5 -m "Release v1.5 — Hello Buckhead" &amp;&amp; git push origin prod-v1.5</pre></div>
+</div></div></div>
+<div class="nb">🎉 <strong>v1.5 shipped!</strong> One release left — home.</div>
+</section>
+
+<!-- v1.6 FINAL -->
+<section class="chapter" id="r16">
+<div class="ch rv16"><div class="cn">§ 17</div><h2>Release v1.6 — Hello, Foxtrail! 🏠<small>Street level — Foxtrail Lane, Buckhead, Northport, Alabama — home</small></h2></div>
+<div class="rh" style="border-color:rgba(52,211,153,.4)">
+  <div class="rt" style="color:#34d399;font-size:20px">v1.6</div>
+  <div><h3>Add "Hello, Foxtrail!" — 12 greetings — FINAL RELEASE</h3><p>Files: <span class="file-badge">hello_world_dev_v1.6.py</span> → <span class="file-badge">hello_world_test_v1.6.py</span> → <span class="file-badge">hello_world_prod_v1.6.py</span></p></div>
+</div>
+
+<div class="cb"><div class="cbh"><span class="cbl">hello_world_dev_v1.6.py — THE COMPLETE FINAL FILE</span><span class="cbe ep">Python</span></div><pre><span class="cm">#!/usr/bin/env python3
+"""
+hello_world_dev_v1.6.py
+Dev build — v1.6 — The complete Hello World program.
+From the infinite to the intimate — from God to Foxtrail Lane.
+Cross-platform: Linux, Windows, macOS.
+"""</span>
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, God!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Universe!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Local Group!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Milky Way!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Solar System!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, United States!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Alabama!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Tuscaloosa County!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Northport!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Buckhead!"</span>)
+    <span class="fn">print</span>(<span class="st">"Hello, Foxtrail!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="fn">main</span>()</pre></div>
+
+<div class="callout" style="border-left-color:#34d399;background:rgba(52,211,153,.05)"><strong>Final Expected Output — All Platforms, All Executables</strong>12 lines in order: God · Universe · Local Group · Milky Way · Solar System · World · United States · Alabama · Tuscaloosa County · Northport · Buckhead · Foxtrail</div>
+
+<div class="ss"><h3>Full Workflow (final release — full steps shown)</h3><div class="line"></div></div>
+<div class="steps">
+
+<div class="step"><div class="sc"><h4>Open GitHub Issue #12</h4>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI</span><span class="cbe ea">All Platforms</span></div><pre>gh issue create \
+  --title "Release v1.6 — Hello, Foxtrail! 🏠 FINAL RELEASE" \
+  --label "release,geo" \
+  --body "The final greeting. Foxtrail Lane, Buckhead, Northport, Tuscaloosa County, Alabama."</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Dev: create file, test script (12 lines), commit, push, tag, test executables</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout dev &amp;&amp; git pull origin dev
+<span class="cm"># Create hello_world_dev_v1.6.py (copy v1.5, add print("Hello, Foxtrail!"), update docstring)</span>
+python3 hello_world_dev_v1.6.py   <span class="cm"># verify all 12 lines</span>
+git add hello_world_dev_v1.6.py
+git commit -m "feat: add Hello Foxtrail — complete v1.6 feature set refs #12"
+git push origin dev
+git tag -a dev-v1.6 -m "Dev build v1.6 — Hello Foxtrail FINAL" &amp;&amp; git push origin dev-v1.6
+<span class="cm"># ⚙ build-dev.yml fires</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Download dev artifacts — final acceptance test on all 3 platforms (12 lines each)</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh run list --workflow=build-dev.yml --limit=3
+gh run download &lt;run-id&gt;</pre></div>
+<div class="pl pl-l">🐧 Linux</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe el">Linux</span></div><pre>chmod +x hello_world_dev_v1.6_linux &amp;&amp; ./hello_world_dev_v1.6_linux
+<span class="cm"># ✓ All 12 lines — PASS</span></pre></div>
+<div class="pl pl-w">🪟 Windows</div>
+<div class="cb"><div class="cbh"><span class="cbl">PowerShell</span><span class="cbe ew">Windows</span></div><pre>.\hello_world_dev_v1.6_windows.exe
+<span class="cm"># ✓ All 12 lines — PASS</span></pre></div>
+<div class="pl pl-m">🍎 macOS</div>
+<div class="cb"><div class="cbh"><span class="cbl">terminal</span><span class="cbe em">macOS</span></div><pre>chmod +x hello_world_dev_v1.6_macos &amp;&amp; ./hello_world_dev_v1.6_macos
+<span class="cm"># ✓ All 12 lines — PASS</span></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>PR dev → test (final), merge</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base test --head dev \
+  --title "Promote v1.6 to test — Hello Foxtrail (FINAL)" \
+  --body "**Release:** v1.6 🏠  **Issue:** refs #12
+
+Final greeting added. All 12 dev executables verified ✓"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Test: rename, tag, acceptance test all 3 executables (12 lines)</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git pull origin test
+git mv hello_world_dev_v1.6.py hello_world_test_v1.6.py
+git commit -m "chore: rename to hello_world_test_v1.6.py" &amp;&amp; git push origin test
+git tag -a test-v1.6 -m "Test build v1.6 — Final" &amp;&amp; git push origin test-v1.6
+<span class="cm"># ⚙ build-test.yml fires — draft release with test executables</span>
+gh release download test-v1.6 --dir ./test-artifacts
+<span class="cm"># Test all 3 — verify 12 lines each ✓</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>PR test → prod (final release), merge</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>gh pr create \
+  --base prod --head test \
+  --title "🏠 Release v1.6 — Hello Foxtrail — FINAL RELEASE" \
+  --body "## v1.6 — Final Release
+
+**Issue:** closes #12
+
+All 12 greetings complete and verified across all 3 platforms:
+God · Universe · Local Group · Milky Way · Solar System · World ·
+United States · Alabama · Tuscaloosa County · Northport · Buckhead · **Foxtrail** ←
+
+## Acceptance Test Results
+- [x] hello_world_test_v1.6_linux — 12 lines ✓
+- [x] hello_world_test_v1.6_windows.exe — 12 lines ✓
+- [x] hello_world_test_v1.6_macos — 12 lines ✓
+
+Linux ✅ | Windows ✅ | macOS ✅"
+gh pr merge --merge --delete-branch=false</pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Prod: rename, tag prod-v1.6, push — triggers final GitHub Release</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout prod &amp;&amp; git pull origin prod
+git mv hello_world_test_v1.6.py hello_world_prod_v1.6.py
+git commit -m "chore: rename to hello_world_prod_v1.6.py — final prod release"
+git push origin prod
+git tag -a prod-v1.6 -m "Release v1.6 — Hello Foxtrail — The complete Hello World journey"
+git push origin prod-v1.6
+<span class="cm"># ⚙ build-prod.yml fires — publishes final GitHub Release 🏠</span></pre></div>
+</div></div>
+
+<div class="step"><div class="sc"><h4>Final sync of all branches</h4>
+<div class="cb"><div class="cbh"><span class="cbl">terminal / PowerShell</span><span class="cbe ea">All Platforms</span></div><pre>git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test
+git checkout dev  &amp;&amp; git merge prod &amp;&amp; git push origin dev
+echo "All branches synced. v1.6 is live. The journey is complete."</pre></div>
+</div></div>
+
+</div>
+<div class="callout major"><strong>🏠 v1.6 Shipped — The Journey is Complete</strong>From "Hello, God!" at the beginning of everything to Foxtrail Lane in Northport, Alabama — 12 releases, 12 greetings, 3 platform executables per release, every build triggered by a branch-scoped tag, every promotion via pull request, every issue tracked and closed. The complete professional GitHub workflow, start to finish.</div>
+</section>
+
+<!-- ═══ PR REFERENCE ═══ -->
+<section class="chapter" id="pr-ref">
+<div class="ch"><div class="cn">§ 18</div><h2>PR Procedures Reference<small>Everything you need to know about pull requests in this project</small></h2></div>
+
+<div class="ss"><h3>PR Lifecycle</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Stage</th><th>Action</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Create</td><td><code>gh pr create</code> or GitHub web UI</td><td>Use the appropriate template body</td></tr>
+<tr><td>Draft</td><td>Mark as Draft while build/tests are in progress</td><td>Prevents accidental early merge</td></tr>
+<tr><td>Ready</td><td>Mark Ready for Review when all checks pass</td><td>Notifies assigned reviewers</td></tr>
+<tr><td>Review</td><td>Reviewer examines diff, leaves comments or approves</td><td>At least 1 approval required (branch protection)</td></tr>
+<tr><td>Checks</td><td>GitHub Actions build must pass</td><td>Required status check (branch protection)</td></tr>
+<tr><td>Merge</td><td><code>gh pr merge --merge --delete-branch=false</code></td><td>Use merge commit — preserves full history</td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>PR Labels Used in This Project</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Label</th><th>Applied to</th></tr></thead>
+<tbody>
+<tr><td><code>release</code></td><td>All promotion PRs</td></tr>
+<tr><td><code>cosmic</code></td><td>v0.1–v0.5 PRs</td></tr>
+<tr><td><code>geo</code></td><td>v1.1–v1.6 PRs</td></tr>
+<tr><td><code>major</code></td><td>v1.0 PRs</td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>Closing PRs vs. Abandoning Them</h3><div class="line"></div></div>
+<div class="callout warn"><strong>If a PR needs to be abandoned</strong>Close the PR without merging (<code>gh pr close &lt;number&gt;</code>). Add a comment explaining why. Do NOT delete the branch from the remote — keep it for reference. Reopen a new PR if the work is resumed later.</div>
+
+<div class="ss"><h3>Reviewing a PR</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">gh CLI — review commands</span><span class="cbe ea">All Platforms</span></div><pre><span class="cm"># View open PRs</span>
+gh pr list
+
+<span class="cm"># Review a specific PR</span>
+gh pr view &lt;number&gt;
+
+<span class="cm"># Approve a PR</span>
+gh pr review &lt;number&gt; --approve --body "All checks pass. Looks good."
+
+<span class="cm"># Request changes</span>
+gh pr review &lt;number&gt; --request-changes --body "Please fix X before merging."
+
+<span class="cm"># Leave a comment without approving or blocking</span>
+gh pr review &lt;number&gt; --comment --body "Minor nit: ..."</pre></div>
+</section>
+
+<!-- ═══ RELEASE NOTES REFERENCE ═══ -->
+<section class="chapter" id="relnotes-ref">
+<div class="ch"><div class="cn">§ 19</div><h2>Release Notes Reference<small>What makes good release notes — and how to write them for this project</small></h2></div>
+
+<div class="callout new"><strong>Why Release Notes Matter</strong>Release notes are the public record of what changed, why it changed, and how to use the new version. For this tutorial project they're intentionally lightweight — but the structure is the same as any real-world project.</div>
+
+<div class="ss"><h3>Structure for This Project</h3><div class="line"></div></div>
+<div class="cb"><div class="cbh"><span class="cbl">release notes template</span><span class="cbe ea">All Releases</span></div><pre>## vX.X — Hello, [Scope]!
+
+### What's New
+- Added `print("Hello, [Scope]!")` — [one sentence about the scope]
+
+### Usage
+```
+./hello_world_prod_vX.X_linux          # Linux
+ .\hello_world_prod_vX.X_windows.exe   # Windows
+./hello_world_prod_vX.X_macos          # macOS
+```
+
+### Downloads
+Three platform executables are attached to this release:
+- hello_world_prod_vX.X_linux
+- hello_world_prod_vX.X_windows.exe
+- hello_world_prod_vX.X_macos
+
+### Output (cumulative — all lines printed in order)
+Hello, God!
+...
+Hello, [Scope]!          ← new in this release
+
+No external dependencies. Requires no Python installation.</pre></div>
+
+<div class="ss"><h3>Do's and Don'ts</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Do</th><th>Don't</th></tr></thead>
+<tbody>
+<tr><td>State what changed, plainly</td><td>Use jargon or internal shorthand</td></tr>
+<tr><td>Show the new expected output</td><td>Assume the reader knows the previous state</td></tr>
+<tr><td>List all downloadable assets explicitly</td><td>Make users guess which file to download</td></tr>
+<tr><td>Link to the closing issue</td><td>Leave the connection to the issue tracker invisible</td></tr>
+<tr><td>Note any breaking changes prominently</td><td>Bury breaking changes in the middle of a paragraph</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ═══ CHEAT SHEET ═══ -->
+<section class="chapter" id="cheatsheet">
+<div class="ch"><div class="cn">REF</div><h2>Quick Cheat Sheet<small>Every command at a glance</small></h2></div>
+
+<div class="ss"><h3>One-Time Setup</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Action</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>Configure identity</td><td><code>git config --global user.name "Name" &amp;&amp; git config --global user.email "e@mail.com"</code></td></tr>
+<tr><td>Auth gh CLI</td><td><code>gh auth login</code></td></tr>
+<tr><td>Create + clone repo</td><td><code>gh repo create hello_world --public --clone</code></td></tr>
+<tr><td>Create branch</td><td><code>git checkout -b &lt;branch&gt; &amp;&amp; git push -u origin &lt;branch&gt;</code></td></tr>
+<tr><td>Create labels</td><td><code>gh label create "release" --color "#0075ca"</code></td></tr>
+<tr><td>Open issue</td><td><code>gh issue create --title "..." --label "release"</code></td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>Per-Release Workflow</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>#</th><th>Action</th><th>Command / Note</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Open issue</td><td><code>gh issue create ...</code> — note the issue number #N</td></tr>
+<tr><td>2</td><td>Dev: create file</td><td>Copy prev version, add print line, update docstring</td></tr>
+<tr><td>3</td><td>Test script locally</td><td><code>python3 hello_world_dev_vX.X.py</code></td></tr>
+<tr><td>4</td><td>Commit &amp; push</td><td><code>git add ... &amp;&amp; git commit -m "feat: ... refs #N" &amp;&amp; git push origin dev</code></td></tr>
+<tr><td>5</td><td>Tag dev build</td><td><code>git tag -a dev-vX.X -m "..." &amp;&amp; git push origin dev-vX.X</code></td></tr>
+<tr><td>6</td><td>Test dev executables</td><td><code>gh run download &lt;run-id&gt;</code> — run on all 3 platforms</td></tr>
+<tr><td>7</td><td>PR dev→test + merge</td><td><code>gh pr create --base test --head dev ...</code></td></tr>
+<tr><td>8</td><td>Rename on test</td><td><code>git mv hello_world_dev_vX.X.py hello_world_test_vX.X.py</code></td></tr>
+<tr><td>9</td><td>Tag test build</td><td><code>git tag -a test-vX.X -m "..." &amp;&amp; git push origin test-vX.X</code></td></tr>
+<tr><td>10</td><td>Acceptance test</td><td><code>gh release download test-vX.X --dir ./test-artifacts</code> — run on all 3</td></tr>
+<tr><td>11</td><td>PR test→prod + merge</td><td><code>gh pr create --base prod --head test ...</code> (body: <code>closes #N</code>)</td></tr>
+<tr><td>12</td><td>Rename on prod</td><td><code>git mv hello_world_test_vX.X.py hello_world_prod_vX.X.py</code></td></tr>
+<tr><td>13</td><td>Tag prod release</td><td><code>git tag -a prod-vX.X -m "..." &amp;&amp; git push origin prod-vX.X</code></td></tr>
+<tr><td>14</td><td>Sync branches</td><td><code>git checkout test &amp;&amp; git merge prod &amp;&amp; git push origin test</code> (repeat for dev)</td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>Tag Naming Convention</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>Tag</th><th>Triggers</th><th>Produces</th><th>Stored as</th></tr></thead>
+<tbody>
+<tr><td><code>dev-vX.X</code></td><td>build-dev.yml</td><td><code>hello_world_dev_vX.X_{linux,windows.exe,macos}</code></td><td>Actions Artifacts</td></tr>
+<tr><td><code>test-vX.X</code></td><td>build-test.yml</td><td><code>hello_world_test_vX.X_{linux,windows.exe,macos}</code></td><td>Draft GitHub Release</td></tr>
+<tr><td><code>prod-vX.X</code></td><td>build-prod.yml</td><td><code>hello_world_prod_vX.X_{linux,windows.exe,macos}</code></td><td>Published GitHub Release</td></tr>
+</tbody>
+</table>
+
+<div class="ss"><h3>Release History</h3><div class="line"></div></div>
+<table>
+<thead><tr><th>prod Tag</th><th>Greeting Added</th><th>Scope</th><th>Lines</th><th>Issue</th></tr></thead>
+<tbody>
+<tr><td><code>prod-v0.1</code></td><td>Hello, God!</td><td>The Divine / Infinite</td><td>1</td><td>#1</td></tr>
+<tr><td><code>prod-v0.2</code></td><td>Hello, Universe!</td><td>All of existence</td><td>2</td><td>#2</td></tr>
+<tr><td><code>prod-v0.3</code></td><td>Hello, Local Group!</td><td>Our galaxy cluster</td><td>3</td><td>#3</td></tr>
+<tr><td><code>prod-v0.4</code></td><td>Hello, Milky Way!</td><td>Our galaxy</td><td>4</td><td>#4</td></tr>
+<tr><td><code>prod-v0.5</code></td><td>Hello, Solar System!</td><td>Our star system</td><td>5</td><td>#5</td></tr>
+<tr><td><code style="color:var(--accent)">prod-v1.0</code></td><td><strong>Hello, World! ★</strong></td><td><strong>Our planet — MAJOR</strong></td><td>6</td><td>#6</td></tr>
+<tr><td><code>prod-v1.1</code></td><td>Hello, United States!</td><td>Country</td><td>7</td><td>#7</td></tr>
+<tr><td><code>prod-v1.2</code></td><td>Hello, Alabama!</td><td>State</td><td>8</td><td>#8</td></tr>
+<tr><td><code>prod-v1.3</code></td><td>Hello, Tuscaloosa County!</td><td>County</td><td>9</td><td>#9</td></tr>
+<tr><td><code>prod-v1.4</code></td><td>Hello, Northport!</td><td>City</td><td>10</td><td>#10</td></tr>
+<tr><td><code>prod-v1.5</code></td><td>Hello, Buckhead!</td><td>Neighborhood</td><td>11</td><td>#11</td></tr>
+<tr><td><code style="color:#34d399">prod-v1.6</code></td><td><strong>Hello, Foxtrail! 🏠</strong></td><td><strong>Street — FINAL</strong></td><td>12</td><td>#12</td></tr>
+</tbody>
+</table>
+
+<div style="margin-top:40px;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2">
+  hello_world · GitHub Workflow Tutorial · Linux · Windows · macOS · GitHub Actions<br>
+  From the infinite to Foxtrail Lane, Northport, Alabama — one PR at a time.
+</div>
+</section>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('#sidebar nav a');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`#sidebar nav a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
